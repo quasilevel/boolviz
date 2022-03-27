@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "module": "es2020",
+    "target": "es6",
+    "rootDir": "src/ts",
+    "outDir": "dist",
+    "sourceMap": false,
+    "strict": true
+  }
+}
