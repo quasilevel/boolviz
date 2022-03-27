@@ -26,4 +26,8 @@ export default class Coord {
   mutAdd(x: number, y: number) {
     this.x += x, this.y += y
   }
+
+  clone(): Coord {
+    return new Coord(this.x, this.y)
+  }
 }
