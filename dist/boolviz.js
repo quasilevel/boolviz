@@ -20,6 +20,17 @@ gt[0] = {
     type: GateType.IN_TERM,
     coord: new Coord(3, 3)
 };
+gt[1] = {
+    type: GateType.OUT_TERM,
+    coord: new Coord(4, 3)
+};
+const drawGateTable = ((g) => (table) => (table.forEach(it => g.drawAt(it.coord, (ctx, { x, y }) => {
+    ctx.beginPath();
+    ctx.fillStyle = "pink";
+    ctx.arc(x, y, 20, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.closePath();
+}))))(gb);
 const frame = (_) => {
     requestAnimationFrame(frame);
     gb.ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -30,14 +41,6 @@ const frame = (_) => {
         ctx.fill();
         ctx.closePath();
     });
-    gt.forEach(it => {
-        const { x, y } = gb.absBoxCoord(it.coord);
-        const { ctx } = gb;
-        ctx.beginPath();
-        ctx.fillStyle = "pink";
-        ctx.arc(x, y, 20, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.closePath();
-    });
+    drawGateTable(gt);
 };
 requestAnimationFrame(frame);
