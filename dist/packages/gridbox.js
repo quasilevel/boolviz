@@ -1,18 +1,9 @@
-import Mouse from './mouse.js';
 import Coord from './coord.js';
-export default class GridBox {
-    constructor({ canvas, boxSize = 75 }) {
-        this.mouse = new Mouse();
-        this.mouse.attach(canvas);
-        this.ctx = canvas.getContext("2d");
+export default class Grid {
+    constructor({ ctx, mouse, boxSize = 75 }) {
+        this.ctx = ctx;
+        this.mouse = mouse;
         this.boxSize = boxSize;
-        const frame = (_) => {
-            requestAnimationFrame(frame);
-            this.ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // this.drawGrid(this.boxSize)
-            this.markCurrentBox();
-        };
-        frame(0);
     }
     getCurrentBox() {
         const { boxSize, mouse: { coord } } = this;
@@ -29,15 +20,6 @@ export default class GridBox {
         this.ctx.save();
         drawer(this.ctx, cur);
         this.ctx.restore();
-    }
-    markCurrentBox() {
-        this.drawUnderCurrentBox((ctx, c) => {
-            ctx.beginPath();
-            ctx.fillStyle = "rebeccapurple";
-            ctx.arc(c.x, c.y, 12, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.closePath();
-        });
     }
     drawGrid(size) {
         const { ctx } = this;

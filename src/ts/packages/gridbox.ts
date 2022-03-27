@@ -1,28 +1,21 @@
 import Mouse from './mouse.js'
 import Coord from './coord.js'
 
-interface GridBoxConfig {
-  canvas: HTMLCanvasElement
+interface GridConfig {
   boxSize?: number
+  ctx: CanvasRenderingContext2D
+  mouse: Mouse
 }
 
-export default class GridBox {
+export default class Grid {
   ctx: CanvasRenderingContext2D
   boxSize: number
-  mouse = new Mouse()
+  mouse: Mouse
 
-  constructor({ canvas, boxSize = 75 }: GridBoxConfig) {
-    this.mouse.attach(canvas)
-    this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+  constructor({ ctx, mouse, boxSize = 75 }: GridConfig) {
+    this.ctx = ctx
+    this.mouse = mouse
     this.boxSize = boxSize
-
-    const frame = (_: number) => {
-      requestAnimationFrame(frame)
-      this.ctx.clearRect(0, 0, canvas.width, canvas.height)
-      // this.drawGrid(this.boxSize)
-      this.markCurrentBox()
-    }
-    frame(0)
   }
 
   getCurrentBox(): Coord {
@@ -44,16 +37,6 @@ export default class GridBox {
     this.ctx.save()
     drawer(this.ctx, cur)
     this.ctx.restore()
-  }
-
-  markCurrentBox() {
-    this.drawUnderCurrentBox((ctx, c) => {
-      ctx.beginPath()
-      ctx.fillStyle = "rebeccapurple"
-      ctx.arc(c.x, c.y, 12, 0, 2 * Math.PI)
-      ctx.fill()
-      ctx.closePath()
-    })
   }
 
   drawGrid(size: number) {
