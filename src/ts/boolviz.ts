@@ -2,6 +2,7 @@ import Coord from './packages/coord.js'
 import { GateDrawer, GateTable, GateType } from './packages/gates.js'
 import Grid, { Drawer } from './packages/grid.js'
 import Mouse from './packages/mouse.js'
+import SpatialMap from './packages/spatialmap.js'
 const $ = document
 
 const canvas = $.querySelector('canvas#boolviz') as HTMLCanvasElement
@@ -23,20 +24,32 @@ const gb = new Grid({
 })
 
 const gt: GateTable = []
-gt[0] = {
+
+
+type Gate = {
+  type: GateType
+  coord: Coord
+}
+const gateMap = new SpatialMap<number>()
+const addGate = ((m: SpatialMap<number>, t: GateTable) => (g: Gate) => {
+  t.push(g)
+  m.set(g.coord, t.length - 1)
+})(gateMap, gt)
+
+addGate({
   type: GateType.IN_TERM,
   coord: new Coord(3, 3)
-}
+})
 
-gt[1] = {
+addGate({
   type: GateType.OUT_TERM,
   coord: new Coord(4, 3)
-}
+})
 
-gt[2] = {
+addGate({
   type: GateType.NOR,
   coord: new Coord(5, 4)
-}
+})
 
 const drawGateTable = ((g: Grid) => (table: GateTable) => (
   table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type) as Drawer))
@@ -45,7 +58,7 @@ const drawGateTable = ((g: Grid) => (table: GateTable) => (
 const frame = (_: number) => {
   requestAnimationFrame(frame)
   gb.ctx.clearRect(0, 0, canvas.width, canvas.height)
-  gb.drawUnderCurrentBox((ctx, {x, y}) => {
+  gateMap.has(gb.getCurrentBox()) || gb.drawUnderCurrentBox((ctx, {x, y}) => {
     ctx.beginPath()
     ctx.fillStyle = "black"
     ctx.arc(x, y, 20, 0, 2 * Math.PI)
