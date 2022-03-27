@@ -1,3 +1,4 @@
+import GridBox from './packages/gridbox.js'
 const $ = document
 
 const canvas = $.querySelector('canvas#boolviz')
@@ -5,4 +6,8 @@ const canvas = $.querySelector('canvas#boolviz')
 canvas.width = innerWidth
 canvas.height = innerHeight
 
-console.table({width: canvas.width, height: canvas.height})
+const gb = new GridBox({
+  canvas: canvas,
+})
+
+console.log(gb)
