@@ -7,7 +7,7 @@ interface GridConfig {
   mouse: Mouse
 }
 
-type Drawer = (ctx: CanvasRenderingContext2D, coord: Coord) => void
+export type Drawer = (ctx: CanvasRenderingContext2D, coord: Coord) => void
 
 export default class Grid {
   ctx: CanvasRenderingContext2D

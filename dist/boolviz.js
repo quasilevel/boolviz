@@ -1,5 +1,5 @@
 import Coord from './packages/coord.js';
-import { GateType } from './packages/gates.js';
+import { GateDrawer, GateType } from './packages/gates.js';
 import Grid from './packages/grid.js';
 import Mouse from './packages/mouse.js';
 const $ = document;
@@ -24,13 +24,11 @@ gt[1] = {
     type: GateType.OUT_TERM,
     coord: new Coord(4, 3)
 };
-const drawGateTable = ((g) => (table) => (table.forEach(it => g.drawAt(it.coord, (ctx, { x, y }) => {
-    ctx.beginPath();
-    ctx.fillStyle = "pink";
-    ctx.arc(x, y, 20, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.closePath();
-}))))(gb);
+gt[2] = {
+    type: GateType.NOR,
+    coord: new Coord(5, 4)
+};
+const drawGateTable = ((g) => (table) => (table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type)))))(gb);
 const frame = (_) => {
     requestAnimationFrame(frame);
     gb.ctx.clearRect(0, 0, canvas.width, canvas.height);

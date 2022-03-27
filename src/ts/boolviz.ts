@@ -1,6 +1,6 @@
 import Coord from './packages/coord.js'
-import { GateTable, GateType } from './packages/gates.js'
-import Grid from './packages/grid.js'
+import { GateDrawer, GateTable, GateType } from './packages/gates.js'
+import Grid, { Drawer } from './packages/grid.js'
 import Mouse from './packages/mouse.js'
 const $ = document
 
@@ -32,14 +32,13 @@ gt[1] = {
   coord: new Coord(4, 3)
 }
 
+gt[2] = {
+  type: GateType.NOR,
+  coord: new Coord(5, 4)
+}
+
 const drawGateTable = ((g: Grid) => (table: GateTable) => (
-  table.forEach(it => g.drawAt(it.coord, (ctx, {x, y}) => {
-    ctx.beginPath()
-    ctx.fillStyle = "pink"
-    ctx.arc(x, y, 20, 0, 2 * Math.PI)
-    ctx.fill()
-    ctx.closePath()
-  }))
+  table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type) as Drawer))
 ))(gb)
 
 const frame = (_: number) => {
