@@ -5,7 +5,9 @@ export default class Mouse {
     }
     attach(el) {
         el.onmousemove = (ev) => {
-            this.coord.x = ev.x, this.coord.y = ev.y;
+            const rect = el.getBoundingClientRect();
+            this.coord.x = ev.x - rect.left;
+            this.coord.y = ev.y - rect.top;
         };
     }
 }
