@@ -1,4 +1,4 @@
-import Grid from './packages/gridbox.js';
+import Grid from './packages/grid.js';
 import Mouse from './packages/mouse.js';
 const $ = document;
 const canvas = $.querySelector('canvas#boolviz');
