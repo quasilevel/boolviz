@@ -7,6 +7,8 @@ interface GridConfig {
   mouse: Mouse
 }
 
+type Drawer = (ctx: CanvasRenderingContext2D, coord: Coord) => void
+
 export default class Grid {
   ctx: CanvasRenderingContext2D
   boxSize: number
@@ -16,6 +18,13 @@ export default class Grid {
     this.ctx = ctx
     this.mouse = mouse
     this.boxSize = boxSize
+  }
+
+  drawAt(c: Coord, d: Drawer) {
+    const coord = this.absBoxCoord(c)
+    this.ctx.save()
+    d(this.ctx, coord)
+    this.ctx.restore()
   }
 
   getCurrentBox(): Coord {
@@ -32,7 +41,7 @@ export default class Grid {
     return n
   }
 
-  drawUnderCurrentBox(drawer: (ctx: CanvasRenderingContext2D, _: Coord) => void) {
+  drawUnderCurrentBox(drawer: Drawer) {
     const cur = this.absBoxCoord(this.getCurrentBox())
     this.ctx.save()
     drawer(this.ctx, cur)

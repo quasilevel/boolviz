@@ -5,6 +5,12 @@ export default class Grid {
         this.mouse = mouse;
         this.boxSize = boxSize;
     }
+    drawAt(c, d) {
+        const coord = this.absBoxCoord(c);
+        this.ctx.save();
+        d(this.ctx, coord);
+        this.ctx.restore();
+    }
     getCurrentBox() {
         const { boxSize, mouse: { coord } } = this;
         return new Coord(Math.floor(coord.x / boxSize), Math.floor(coord.y / boxSize));
