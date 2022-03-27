@@ -19,6 +19,7 @@ mouse.attach(canvas)
 const gb = new Grid({
   ctx: canvas.getContext("2d") as CanvasRenderingContext2D,
   mouse: mouse,
+  boxSize: 100,
 })
 
 const gt: GateTable = []

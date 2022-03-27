@@ -14,6 +14,7 @@ mouse.attach(canvas);
 const gb = new Grid({
     ctx: canvas.getContext("2d"),
     mouse: mouse,
+    boxSize: 100,
 });
 const gt = [];
 gt[0] = {
