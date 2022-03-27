@@ -19,7 +19,7 @@ export default class GridBox {
     const frame = (_: number) => {
       requestAnimationFrame(frame)
       this.ctx.clearRect(0, 0, canvas.width, canvas.height)
-      this.drawGrid(this.boxSize)
+      // this.drawGrid(this.boxSize)
       this.markCurrentBox()
     }
     frame(0)
@@ -32,9 +32,28 @@ export default class GridBox {
     )
   }
 
+  absBoxCoord(c: Coord): Coord {
+    const n = c.clone()
+    n.mutScale(this.boxSize)
+    n.mutAdd(this.boxSize / 2, this.boxSize / 2)
+    return n
+  }
+
+  drawUnderCurrentBox(drawer: (ctx: CanvasRenderingContext2D, _: Coord) => void) {
+    const cur = this.absBoxCoord(this.getCurrentBox())
+    this.ctx.save()
+    drawer(this.ctx, cur)
+    this.ctx.restore()
+  }
+
   markCurrentBox() {
-    const cur = this.getCurrentBox()
-    console.log(cur)
+    this.drawUnderCurrentBox((ctx, c) => {
+      ctx.beginPath()
+      ctx.fillStyle = "rebeccapurple"
+      ctx.arc(c.x, c.y, 12, 0, 2 * Math.PI)
+      ctx.fill()
+      ctx.closePath()
+    })
   }
 
   drawGrid(size: number) {
