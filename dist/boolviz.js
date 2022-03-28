@@ -36,6 +36,12 @@ addGate({
     coord: new Coord(5, 4)
 });
 const drawGateTable = ((g) => (table) => (table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type)))))(gb);
+window.addEventListener('grid_click', ((ev) => {
+    addGate({
+        type: ev.detail.type,
+        coord: ev.detail.coord,
+    });
+}));
 const frame = (_) => {
     requestAnimationFrame(frame);
     gb.ctx.clearRect(0, 0, canvas.width, canvas.height);

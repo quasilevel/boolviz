@@ -55,6 +55,13 @@ const drawGateTable = ((g: Grid) => (table: GateTable) => (
   table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type) as Drawer))
 ))(gb)
 
+window.addEventListener('grid_click', ((ev: CustomEvent<Gate>) => {
+  addGate({
+    type: ev.detail.type,
+    coord: ev.detail.coord,
+  })
+}) as EventListener)
+
 const frame = (_: number) => {
   requestAnimationFrame(frame)
   gb.ctx.clearRect(0, 0, canvas.width, canvas.height)
