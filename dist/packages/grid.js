@@ -11,9 +11,13 @@ export default class Grid {
         d(this.ctx, coord);
         this.ctx.restore();
     }
-    getCurrentBox() {
-        const { boxSize, mouse: { coord } } = this;
+    relBoxCoord(coord) {
+        const { boxSize } = this;
         return new Coord(Math.floor(coord.x / boxSize), Math.floor(coord.y / boxSize));
+    }
+    getCurrentBox() {
+        const { mouse: { coord } } = this;
+        return this.relBoxCoord(coord);
     }
     absBoxCoord(c) {
         const n = c.clone();

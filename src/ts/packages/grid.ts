@@ -27,11 +27,16 @@ export default class Grid {
     this.ctx.restore()
   }
 
-  getCurrentBox(): Coord {
-    const { boxSize, mouse: { coord } } = this
+  relBoxCoord(coord: Coord): Coord {
+    const { boxSize } = this
     return new Coord(
       Math.floor(coord.x / boxSize), Math.floor(coord.y / boxSize)
     )
+  }
+
+  getCurrentBox(): Coord {
+    const { mouse: { coord } } = this
+    return this.relBoxCoord(coord)
   }
 
   absBoxCoord(c: Coord): Coord {
