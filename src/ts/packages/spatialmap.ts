@@ -17,11 +17,11 @@ export default class SpatialMap<T> {
       return this
     }
 
-    this.m.get(c.x).set(c.y, val)
+    (this.m.get(c.x) as Map<number, T>).set(c.y, val)
     return this
   }
 
-  get(c: Coord): T {
+  get(c: Coord): T | undefined {
     return this.m.get(c.x)?.get(c.y)
   }
 }
