@@ -31,7 +31,7 @@ export const GateDrawer = new Map([
   [GateType.NOR, drawer("pink")],
 ])
 
-type Gate = {
+export type Gate = {
   type: GateType
   coord: Coord
 }

@@ -1,5 +1,5 @@
 import Coord from './packages/coord.js'
-import { GateDrawer, GateTable, GateType } from './packages/gates.js'
+import { Gate, GateDrawer, GateTable, GateType } from './packages/gates.js'
 import Grid, { Drawer } from './packages/grid.js'
 import Mouse from './packages/mouse.js'
 import SpatialMap from './packages/spatialmap.js'
@@ -25,11 +25,6 @@ const gb = new Grid({
 
 const gt: GateTable = []
 
-
-type Gate = {
-  type: GateType
-  coord: Coord
-}
 const gateMap = new SpatialMap<number>()
 const addGate = ((m: SpatialMap<number>, t: GateTable) => (g: Gate) => {
   t.push(g)
