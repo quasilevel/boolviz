@@ -1,5 +1,6 @@
 import Mouse from './mouse.js'
 import Coord from './coord.js'
+import { Gate, GateType } from './gates.js'
 
 interface GridConfig {
   boxSize?: number
@@ -18,6 +19,15 @@ export default class Grid {
     this.ctx = ctx
     this.mouse = mouse
     this.boxSize = boxSize
+
+    this._addClickListener()
+  }
+
+  _addClickListener() {
+    this.ctx.canvas.addEventListener('click', () => {
+      const ev = new CustomEvent<Gate>("grid_click", { detail: { type: GateType.NOR, coord: this.relBoxCoord(this.mouse.coord) } })
+      window.dispatchEvent(ev)
+    })
   }
 
   drawAt(c: Coord, d: Drawer) {

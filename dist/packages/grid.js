@@ -1,9 +1,17 @@
 import Coord from './coord.js';
+import { GateType } from './gates.js';
 export default class Grid {
     constructor({ ctx, mouse, boxSize = 75 }) {
         this.ctx = ctx;
         this.mouse = mouse;
         this.boxSize = boxSize;
+        this._addClickListener();
+    }
+    _addClickListener() {
+        this.ctx.canvas.addEventListener('click', () => {
+            const ev = new CustomEvent("grid_click", { detail: { type: GateType.NOR, coord: this.relBoxCoord(this.mouse.coord) } });
+            window.dispatchEvent(ev);
+        });
     }
     drawAt(c, d) {
         const coord = this.absBoxCoord(c);
