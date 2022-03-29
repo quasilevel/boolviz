@@ -1,6 +1,6 @@
 import Coord from './packages/coord.js'
 import { Gate, GateDrawer, GateTable, GateType } from './packages/gates.js'
-import Grid, { Drawer } from './packages/grid.js'
+import Grid, { Drawer, GridClickEvent } from './packages/grid.js'
 import Mouse from './packages/mouse.js'
 import SpatialMap from './packages/spatialmap.js'
 const $ = document
@@ -50,9 +50,9 @@ const drawGateTable = ((g: Grid) => (table: GateTable) => (
   table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type) as Drawer))
 ))(gb)
 
-window.addEventListener('grid_click', ((ev: CustomEvent<Gate>) => {
+window.addEventListener('grid_click', ((ev: CustomEvent<GridClickEvent>) => {
   addGate({
-    type: ev.detail.type,
+    type: GateType.AND,
     coord: ev.detail.coord,
   })
 }) as EventListener)

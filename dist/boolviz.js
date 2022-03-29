@@ -38,7 +38,7 @@ addGate({
 const drawGateTable = ((g) => (table) => (table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type)))))(gb);
 window.addEventListener('grid_click', ((ev) => {
     addGate({
-        type: ev.detail.type,
+        type: GateType.AND,
         coord: ev.detail.coord,
     });
 }));

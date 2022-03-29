@@ -1,11 +1,17 @@
 import Mouse from './mouse.js'
 import Coord from './coord.js'
-import { Gate, GateType } from './gates.js'
 
 interface GridConfig {
   boxSize?: number
   ctx: CanvasRenderingContext2D
   mouse: Mouse
+}
+
+export class GridClickEvent {
+  coord: Coord
+  constructor(c: Coord) {
+    this.coord = c
+  }
 }
 
 export type Drawer = (ctx: CanvasRenderingContext2D, coord: Coord) => void
@@ -25,7 +31,9 @@ export default class Grid {
 
   _addClickListener() {
     this.ctx.canvas.addEventListener('click', () => {
-      const ev = new CustomEvent<Gate>("grid_click", { detail: { type: GateType.NOR, coord: this.relBoxCoord(this.mouse.coord) } })
+      const ev = new CustomEvent<GridClickEvent>("grid_click", {
+        detail: new GridClickEvent(this.relBoxCoord(this.mouse.coord))
+      })
       window.dispatchEvent(ev)
     })
   }

@@ -1,5 +1,9 @@
 import Coord from './coord.js';
-import { GateType } from './gates.js';
+export class GridClickEvent {
+    constructor(c) {
+        this.coord = c;
+    }
+}
 export default class Grid {
     constructor({ ctx, mouse, boxSize = 75 }) {
         this.ctx = ctx;
@@ -9,7 +13,9 @@ export default class Grid {
     }
     _addClickListener() {
         this.ctx.canvas.addEventListener('click', () => {
-            const ev = new CustomEvent("grid_click", { detail: { type: GateType.NOR, coord: this.relBoxCoord(this.mouse.coord) } });
+            const ev = new CustomEvent("grid_click", {
+                detail: new GridClickEvent(this.relBoxCoord(this.mouse.coord))
+            });
             window.dispatchEvent(ev);
         });
     }
