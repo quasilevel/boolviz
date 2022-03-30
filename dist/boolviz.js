@@ -23,12 +23,6 @@ const addGate = ((m, t) => (g) => {
     m.set(g.coord, t.length - 1);
 })(gateMap, gt);
 const drawGateTable = ((g) => (table) => (table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type)))))(gb);
-window.addEventListener('grid_click', ((ev) => {
-    addGate({
-        type: GateType.AND,
-        coord: ev.detail.coord,
-    });
-}));
 const frame = (_) => {
     requestAnimationFrame(frame);
     gb.ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -42,3 +36,17 @@ const frame = (_) => {
     drawGateTable(gt);
 };
 requestAnimationFrame(frame);
+export const requestGateAddition = (t) => {
+    let cancel;
+    const listener = (ev) => {
+        addGate({
+            type: t,
+            coord: ev.detail.coord,
+        });
+        cancel();
+    };
+    cancel = () => removeEventListener("grid_click", listener);
+    addEventListener("grid_click", listener);
+    return cancel;
+};
+requestGateAddition(GateType.NOR);
