@@ -1,0 +1,46 @@
+:root {
+  --icon-size: 72px;
+  --pallete-gap: 0.5em;
+  --pallete-size: calc((var(--icon-size) * 2) + (var(--pallete-gap)));
+}
+
+body {
+  margin: 0px;
+  padding: 0px;
+  background: #561e43;
+}
+
+#gates-pallete {
+  background: #561e43;
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--pallete-size);
+  left: 2em;
+  border-radius: 6px;
+  border: 2px solid pink;
+}
+
+#gates-pallete {
+  display: flex;
+  padding: var(--pallete-gap);
+  gap: var(--pallete-gap);
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: start;
+}
+
+#gates-pallete .gate-con {
+  width: var(--icon-size);
+  height: var(--icon-size);
+  padding: 4px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  transition: all 0.1s ease-in-out 0s;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+#gates-pallete .gate-con:hover {
+  border-color: pink;
+}
