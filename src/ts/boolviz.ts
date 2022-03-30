@@ -1,4 +1,3 @@
-import Coord from './packages/coord.js'
 import { Gate, GateDrawer, GateTable, GateType } from './packages/gates.js'
 import Grid, { Drawer, GridClickEvent } from './packages/grid.js'
 import Mouse from './packages/mouse.js'
@@ -30,21 +29,6 @@ const addGate = ((m: SpatialMap<number>, t: GateTable) => (g: Gate) => {
   t.push(g)
   m.set(g.coord, t.length - 1)
 })(gateMap, gt)
-
-addGate({
-  type: GateType.IN_TERM,
-  coord: new Coord(3, 3)
-})
-
-addGate({
-  type: GateType.OUT_TERM,
-  coord: new Coord(4, 3)
-})
-
-addGate({
-  type: GateType.NOR,
-  coord: new Coord(5, 4)
-})
 
 const drawGateTable = ((g: Grid) => (table: GateTable) => (
   table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type) as Drawer))
