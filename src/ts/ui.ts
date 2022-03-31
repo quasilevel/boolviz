@@ -30,13 +30,12 @@ gatesButtons.forEach(it => {
   }
   const gt = gateEnumMap.get(gate as string)
 
-  el.addEventListener("click", () => {
+  el.addEventListener("click", async () => {
     if (el.dataset.state === GateButtonState.SELECTED) {
       return
     }
     el.dataset.state = GateButtonState.SELECTED
-    requestGateAddition(gt as GateType)
-
-    console.log(gt)
+    await requestGateAddition(gt as GateType)
+    el.dataset.state = GateButtonState.NORMAL
   })
 })

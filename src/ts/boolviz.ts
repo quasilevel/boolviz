@@ -35,7 +35,10 @@ const drawGateTable = ((g: Grid) => (table: GateTable) => (
 ))(gb)
 
 type ProgramState = {
-  gateAdditionRequest: GateType | null
+  gateAdditionRequest: {
+    type: GateType
+    cancel: () => void
+  } | null
 }
 
 const state: ProgramState = {
@@ -63,24 +66,40 @@ const frame = (_: number) => {
 
 requestAnimationFrame(frame)
 
-type RequestCanceler = () => void
-export const requestGateAddition = (t: GateType): RequestCanceler => {
-  state.gateAdditionRequest = t
-  let cancel: RequestCanceler
-  const listener = (ev: CustomEvent<GridClickEvent>) => {
+export const enum AdditionResult {
+  Added, Cancelled
+}
+export const requestGateAddition = (t: GateType): Promise<AdditionResult> => {
+  if (state.gateAdditionRequest !== null) {
+    state.gateAdditionRequest.cancel()
+  }
+
+  let cleanUp: () => void
+  const listener = (res: any) => (ev: CustomEvent<GridClickEvent>) => {
     addGate({
       type: t,
       coord: ev.detail.coord,
     })
+    res(AdditionResult.Added)
 
-    cancel()
+    cleanUp()
   }
 
-  cancel = () => {
-    removeEventListener("grid_click", listener as EventListener)
-    state.gateAdditionRequest = null
-  }
-  addEventListener("grid_click", listener as EventListener)
-  return cancel
+  return new Promise<AdditionResult>(res => {
+    const l = listener(res)
+    cleanUp = () => {
+      removeEventListener("grid_click", l as EventListener)
+      state.gateAdditionRequest = null
+    }
+
+    state.gateAdditionRequest = {
+      type: t, cancel: () => {
+        res(AdditionResult.Cancelled)
+        cleanUp()
+      }
+    }
+
+    addEventListener("grid_click", l as EventListener)
+  })
 }
 

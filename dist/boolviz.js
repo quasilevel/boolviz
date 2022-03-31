@@ -45,19 +45,30 @@ const frame = (_) => {
 };
 requestAnimationFrame(frame);
 export const requestGateAddition = (t) => {
-    state.gateAdditionRequest = t;
-    let cancel;
-    const listener = (ev) => {
+    if (state.gateAdditionRequest !== null) {
+        state.gateAdditionRequest.cancel();
+    }
+    let cleanUp;
+    const listener = (res) => (ev) => {
         addGate({
             type: t,
             coord: ev.detail.coord,
         });
-        cancel();
+        res(0 /* Added */);
+        cleanUp();
     };
-    cancel = () => {
-        removeEventListener("grid_click", listener);
-        state.gateAdditionRequest = null;
-    };
-    addEventListener("grid_click", listener);
-    return cancel;
+    return new Promise(res => {
+        const l = listener(res);
+        cleanUp = () => {
+            removeEventListener("grid_click", l);
+            state.gateAdditionRequest = null;
+        };
+        state.gateAdditionRequest = {
+            type: t, cancel: () => {
+                res(1 /* Cancelled */);
+                cleanUp();
+            }
+        };
+        addEventListener("grid_click", l);
+    });
 };
