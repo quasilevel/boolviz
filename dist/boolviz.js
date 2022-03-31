@@ -23,20 +23,26 @@ const addGate = ((m, t) => (g) => {
     m.set(g.coord, t.length - 1);
 })(gateMap, gt);
 const drawGateTable = ((g) => (table) => (table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type)))))(gb);
+const state = {
+    gateAdditionRequest: null
+};
 const frame = (_) => {
     requestAnimationFrame(frame);
     gb.ctx.clearRect(0, 0, canvas.width, canvas.height);
-    gateMap.has(gb.getCurrentBox()) || gb.drawUnderCurrentBox((ctx, { x, y }) => {
-        ctx.beginPath();
-        ctx.fillStyle = "black";
-        ctx.arc(x, y, 20, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.closePath();
-    });
+    if (state.gateAdditionRequest !== null && !gateMap.has(gb.getCurrentBox())) {
+        gb.drawUnderCurrentBox((ctx, { x, y }) => {
+            ctx.beginPath();
+            ctx.fillStyle = "black";
+            ctx.arc(x, y, 20, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+        });
+    }
     drawGateTable(gt);
 };
 requestAnimationFrame(frame);
 export const requestGateAddition = (t) => {
+    state.gateAdditionRequest = t;
     let cancel;
     const listener = (ev) => {
         addGate({
@@ -45,7 +51,10 @@ export const requestGateAddition = (t) => {
         });
         cancel();
     };
-    cancel = () => removeEventListener("grid_click", listener);
+    cancel = () => {
+        removeEventListener("grid_click", listener);
+        state.gateAdditionRequest = null;
+    };
     addEventListener("grid_click", listener);
     return cancel;
 };

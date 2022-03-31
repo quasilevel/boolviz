@@ -34,16 +34,26 @@ const drawGateTable = ((g: Grid) => (table: GateTable) => (
   table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type) as Drawer))
 ))(gb)
 
+type ProgramState = {
+  gateAdditionRequest: GateType | null
+}
+
+const state: ProgramState = {
+  gateAdditionRequest: null
+}
+
 const frame = (_: number) => {
   requestAnimationFrame(frame)
   gb.ctx.clearRect(0, 0, canvas.width, canvas.height)
-  gateMap.has(gb.getCurrentBox()) || gb.drawUnderCurrentBox((ctx, {x, y}) => {
-    ctx.beginPath()
-    ctx.fillStyle = "black"
-    ctx.arc(x, y, 20, 0, 2 * Math.PI)
-    ctx.fill()
-    ctx.closePath()
-  })
+  if (state.gateAdditionRequest !== null && !gateMap.has(gb.getCurrentBox())) {
+    gb.drawUnderCurrentBox((ctx, {x, y}) => {
+      ctx.beginPath()
+      ctx.fillStyle = "black"
+      ctx.arc(x, y, 20, 0, 2 * Math.PI)
+      ctx.fill()
+      ctx.closePath()
+    })
+  }
 
   drawGateTable(gt)
 }
@@ -52,6 +62,7 @@ requestAnimationFrame(frame)
 
 type RequestCanceler = () => void
 export const requestGateAddition = (t: GateType): RequestCanceler => {
+  state.gateAdditionRequest = t
   let cancel: RequestCanceler
   const listener = (ev: CustomEvent<GridClickEvent>) => {
     addGate({
@@ -62,7 +73,10 @@ export const requestGateAddition = (t: GateType): RequestCanceler => {
     cancel()
   }
 
-  cancel = () => removeEventListener("grid_click", listener as EventListener)
+  cancel = () => {
+    removeEventListener("grid_click", listener as EventListener)
+    state.gateAdditionRequest = null
+  }
   addEventListener("grid_click", listener as EventListener)
   return cancel
 }
