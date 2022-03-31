@@ -1,4 +1,4 @@
-import { GateDrawer, GateType } from './packages/gates.js';
+import { GateDrawer } from './packages/gates.js';
 import Grid from './packages/grid.js';
 import Mouse from './packages/mouse.js';
 import SpatialMap from './packages/spatialmap.js';
@@ -61,4 +61,3 @@ export const requestGateAddition = (t) => {
     addEventListener("grid_click", listener);
     return cancel;
 };
-requestGateAddition(GateType.NOR);

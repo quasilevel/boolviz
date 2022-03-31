@@ -84,4 +84,3 @@ export const requestGateAddition = (t: GateType): RequestCanceler => {
   return cancel
 }
 
-requestGateAddition(GateType.NOR)
