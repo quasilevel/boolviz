@@ -44,3 +44,7 @@ body {
 #gates-pallete .gate-con:hover {
   border-color: pink;
 }
+
+#gates-pallete .gate-con[data-state="selected"] {
+  background: pink;
+}
