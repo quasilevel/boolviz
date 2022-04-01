@@ -22,13 +22,13 @@ const drawer: (_: string) => Drawer = (color: string) => (ctx, {x, y}) => {
 
 export const GateDrawer = new Map([
   [GateType.IN_TERM, drawer("pink")],
-  [GateType.OUT_TERM, drawer("pink")],
-  [GateType.AND, drawer("pink")],
-  [GateType.OR, drawer("pink")],
-  [GateType.XOR, drawer("pink")],
-  [GateType.NOT, drawer("pink")],
-  [GateType.NAND, drawer("pink")],
-  [GateType.NOR, drawer("pink")],
+  [GateType.OUT_TERM, drawer("deeppink")],
+  [GateType.AND, drawer("#ba2fce")],
+  [GateType.OR, drawer("#6552e3")],
+  [GateType.XOR, drawer("#d5a840")],
+  [GateType.NOT, drawer("#d55c40")],
+  [GateType.NAND, drawer("#41e187")],
+  [GateType.NOR, drawer("#3accee")],
 ])
 
 export type Gate = {
