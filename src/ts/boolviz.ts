@@ -1,3 +1,4 @@
+import { Connections } from './packages/connections.js'
 import Coord from './packages/coord.js'
 import { Gate, GateDrawer, GateTable, GateType } from './packages/gates.js'
 import Grid, { Drawer, GridClickEvent } from './packages/grid.js'
@@ -44,6 +45,18 @@ addGate({
 addGate({
   type: GateType.OUT_TERM, coord: new Coord(8, 3)
 })
+addGate({
+  type: GateType.OUT_TERM, coord: new Coord(8, 4)
+})
+const connTable = new Connections()
+connTable.add(0, 1)
+connTable.add(1, 2)
+connTable.add(1, 3)
+connTable.add(2, 3)
+
+connTable.deleteAll(2)
+
+connTable.forEach(console.log)
 
 type ProgramState = {
   gateAdditionRequest: {
