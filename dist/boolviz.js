@@ -1,4 +1,5 @@
-import { GateDrawer } from './packages/gates.js';
+import Coord from './packages/coord.js';
+import { GateDrawer, GateType } from './packages/gates.js';
 import Grid from './packages/grid.js';
 import Mouse from './packages/mouse.js';
 import SpatialMap from './packages/spatialmap.js';
@@ -23,6 +24,15 @@ const addGate = ((m, t) => (g) => {
     m.set(g.coord, t.length - 1);
 })(gateMap, gt);
 const drawGateTable = ((g) => (table) => (table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type)))))(gb);
+addGate({
+    type: GateType.IN_TERM, coord: new Coord(4, 3)
+});
+addGate({
+    type: GateType.AND, coord: new Coord(6, 3)
+});
+addGate({
+    type: GateType.OUT_TERM, coord: new Coord(8, 3)
+});
 const state = {
     gateAdditionRequest: null
 };
