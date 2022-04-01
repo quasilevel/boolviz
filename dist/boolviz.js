@@ -39,15 +39,12 @@ const state = {
 const frame = (_) => {
     requestAnimationFrame(frame);
     gb.ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (state.gateAdditionRequest !== null && !gateMap.has(gb.getCurrentBox())) {
-        gb.drawUnderCurrentBox((ctx, { x, y }) => {
+    const { gateAdditionRequest: gar } = state;
+    if (gar !== null && !gateMap.has(gb.getCurrentBox())) {
+        gb.drawUnderCurrentBox((ctx, coord) => {
             ctx.save();
             ctx.globalAlpha = 0.4;
-            ctx.beginPath();
-            ctx.fillStyle = "black";
-            ctx.arc(x, y, 20, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.closePath();
+            GateDrawer.get(gar.type)(ctx, coord);
             ctx.restore();
         });
     }
