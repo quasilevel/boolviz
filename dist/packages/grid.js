@@ -39,6 +39,14 @@ export default class Grid {
         n.mutAdd(this.boxSize / 2, this.boxSize / 2);
         return n;
     }
+    getGridRect(c) {
+        const pos = c.clone();
+        pos.mutScale(this.boxSize);
+        return {
+            x: pos.x, y: pos.y,
+            w: pos.x + this.boxSize, h: pos.y + this.boxSize
+        };
+    }
     drawUnderCurrentBox(drawer) {
         const cur = this.absBoxCoord(this.getCurrentBox());
         this.ctx.save();

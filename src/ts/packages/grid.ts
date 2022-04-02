@@ -14,6 +14,13 @@ export class GridClickEvent {
   }
 }
 
+export type GridRect = {
+  x: number
+  y: number
+  w: number
+  h: number
+}
+
 export type Drawer = (ctx: CanvasRenderingContext2D, coord: Coord) => void
 
 export default class Grid {
@@ -62,6 +69,15 @@ export default class Grid {
     n.mutScale(this.boxSize)
     n.mutAdd(this.boxSize / 2, this.boxSize / 2)
     return n
+  }
+
+  getGridRect(c: Coord): GridRect {
+    const pos = c.clone()
+    pos.mutScale(this.boxSize)
+    return {
+      x: pos.x, y: pos.y,
+      w: pos.x + this.boxSize, h: pos.y + this.boxSize
+    }
   }
 
   drawUnderCurrentBox(drawer: Drawer) {
