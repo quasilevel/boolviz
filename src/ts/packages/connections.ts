@@ -5,7 +5,7 @@ export class Connections {
     if (!this.c.has(from)) {
       this.c.set(from, new Set())
     }
-    this.c.get(from).add(to)
+    this.c.get(from)?.add(to)
   }
 
   delete(from: number, to: number) {

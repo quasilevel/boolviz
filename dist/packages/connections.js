@@ -3,10 +3,11 @@ export class Connections {
         this.c = new Map();
     }
     add(from, to) {
+        var _a;
         if (!this.c.has(from)) {
             this.c.set(from, new Set());
         }
-        this.c.get(from).add(to);
+        (_a = this.c.get(from)) === null || _a === void 0 ? void 0 : _a.add(to);
     }
     delete(from, to) {
         var _a;
