@@ -1,4 +1,5 @@
 import Coord from "./coord.js";
+const CONNECTION_JOIN_GAP = 15; // px
 export class Connections {
     constructor() {
         this.c = new Map();
@@ -28,7 +29,7 @@ const getCoord = (adjuster) => (gt) => (index) => {
 };
 const getAdjustedCoord = (left) => (g) => getCoord(c => {
     const rect = g.getGridRect(c);
-    return new Coord((left) ? rect.x : (rect.x + rect.w), rect.y + (rect.h / 2));
+    return new Coord((left) ? (rect.x + CONNECTION_JOIN_GAP) : (rect.x + rect.w - CONNECTION_JOIN_GAP), rect.y + (rect.h / 2));
 });
 const getFromCoord = getAdjustedCoord(false);
 const getToCoord = getAdjustedCoord(true);

@@ -30,7 +30,7 @@ addGate({
     type: GateType.IN_TERM, coord: new Coord(4, 3)
 });
 addGate({
-    type: GateType.AND, coord: new Coord(6, 3)
+    type: GateType.AND, coord: new Coord(5, 3)
 });
 addGate({
     type: GateType.OUT_TERM, coord: new Coord(8, 3)

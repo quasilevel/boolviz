@@ -2,6 +2,8 @@ import Coord from "./coord.js"
 import { GateTable } from "./gates.js"
 import Grid from "./grid.js"
 
+const CONNECTION_JOIN_GAP = 15 // px
+
 export class Connections {
   private c: Map<number, Set<number>> = new Map()
 
@@ -34,7 +36,7 @@ const getCoord = (adjuster: (c: Coord) => Coord) => (gt: GateTable) => (index: n
 const getAdjustedCoord = (left: boolean) => (g: Grid) => getCoord(c => {
   const rect = g.getGridRect(c)
   return new Coord(
-    (left) ? rect.x : (rect.x + rect.w),
+    (left) ? (rect.x + CONNECTION_JOIN_GAP) : (rect.x + rect.w - CONNECTION_JOIN_GAP),
     rect.y + (rect.h / 2)
   )
 })
