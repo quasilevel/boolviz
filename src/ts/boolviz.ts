@@ -50,8 +50,12 @@ addGate({
 addGate({
   type: GateType.OUT_TERM, coord: new Coord(8, 4)
 })
+addGate({
+  type: GateType.OUT_TERM, coord: new Coord(6, 2)
+})
 const connTable = new Connections()
 connTable.add(0, 1)
+connTable.add(0, 4)
 connTable.add(1, 2)
 connTable.add(1, 3)
 
