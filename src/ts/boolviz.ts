@@ -42,7 +42,7 @@ addGate({
   type: GateType.IN_TERM, coord: new Coord(4, 3)
 })
 addGate({
-  type: GateType.AND, coord: new Coord(5, 3)
+  type: GateType.AND, coord: new Coord(6, 3)
 })
 addGate({
   type: GateType.OUT_TERM, coord: new Coord(8, 3)
@@ -53,11 +53,15 @@ addGate({
 addGate({
   type: GateType.OUT_TERM, coord: new Coord(6, 2)
 })
+addGate({
+  type: GateType.IN_TERM, coord: new Coord(4, 4)
+})
 const connTable = new Connections()
 connTable.add(0, 1)
 connTable.add(0, 4)
 connTable.add(1, 2)
 connTable.add(1, 3)
+connTable.add(5, 1)
 
 type ProgramState = {
   gateAdditionRequest: {
