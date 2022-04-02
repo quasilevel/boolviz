@@ -44,7 +44,7 @@ export default class Grid {
         pos.mutScale(this.boxSize);
         return {
             x: pos.x, y: pos.y,
-            w: pos.x + this.boxSize, h: pos.y + this.boxSize
+            w: this.boxSize, h: this.boxSize
         };
     }
     drawUnderCurrentBox(drawer) {
