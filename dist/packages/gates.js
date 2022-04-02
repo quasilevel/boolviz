@@ -26,3 +26,21 @@ export const GateDrawer = new Map([
     [GateType.NAND, drawer("#41e187")],
     [GateType.NOR, drawer("#3accee")],
 ]);
+export const GateArgCount = new Map([
+    [GateType.IN_TERM, 0],
+    [GateType.OUT_TERM, 1],
+    [GateType.AND, 2],
+    [GateType.OR, 2],
+    [GateType.XOR, 2],
+    [GateType.NOT, 1],
+    [GateType.NAND, 2],
+    [GateType.NOR, 2],
+]);
+export const GateSolver = new Map([
+    [GateType.AND, ([a, b]) => a && b],
+    [GateType.OR, ([a, b]) => a || b],
+    [GateType.XOR, ([a, b]) => a !== b],
+    [GateType.NOT, ([a]) => !a],
+    [GateType.NAND, ([a, b]) => !(a && b)],
+    [GateType.NOR, ([a, b]) => !(a || b)],
+]);

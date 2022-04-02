@@ -31,6 +31,26 @@ export const GateDrawer = new Map([
   [GateType.NOR, drawer("#3accee")],
 ])
 
+export const GateArgCount = new Map([
+  [GateType.IN_TERM, 0],
+  [GateType.OUT_TERM, 1],
+  [GateType.AND, 2],
+  [GateType.OR, 2],
+  [GateType.XOR, 2],
+  [GateType.NOT, 1],
+  [GateType.NAND, 2],
+  [GateType.NOR, 2],
+])
+
+export const GateSolver = new Map([
+  [GateType.AND, ([a, b]: boolean[]): boolean => a && b],
+  [GateType.OR, ([a, b]: boolean[]): boolean => a || b],
+  [GateType.XOR, ([a, b]: boolean[]): boolean => a !== b],
+  [GateType.NOT, ([a]: boolean[]): boolean => !a],
+  [GateType.NAND, ([a, b]: boolean[]): boolean => !(a && b)],
+  [GateType.NOR, ([a, b]: boolean[]): boolean => !(a || b)],
+])
+
 export type Gate = {
   type: GateType
   coord: Coord
