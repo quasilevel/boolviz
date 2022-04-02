@@ -33,12 +33,19 @@ const getAdjustedCoord = (left) => (g) => getCoord(c => {
 });
 const getFromCoord = getAdjustedCoord(false);
 const getToCoord = getAdjustedCoord(true);
+const getControlPoints = (from, to) => {
+    const xavg = (from.x + to.x) / 2;
+    return [
+        new Coord(xavg, from.y), new Coord(xavg, to.y)
+    ];
+};
 export const getCoordMappers = (g) => (gt) => [getFromCoord(g)(gt), getToCoord(g)(gt)];
 export const drawConnection = ((ctx) => (fromCoordMap, toCoordMap) => (from, to) => {
     const [fcoord, tcoord] = [fromCoordMap(from), toCoordMap(to)];
+    const [cp1, cp2] = getControlPoints(fcoord, tcoord);
     ctx.beginPath();
     ctx.moveTo(fcoord.x, fcoord.y);
-    ctx.bezierCurveTo(fcoord.x, fcoord.y, tcoord.x, tcoord.y, tcoord.x, tcoord.y);
+    ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, tcoord.x, tcoord.y);
     ctx.stroke();
     ctx.closePath();
 });
