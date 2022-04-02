@@ -22,6 +22,16 @@ export class Connections {
     forEach(callback) {
         this.c.forEach((tos, from) => tos.forEach(to => callback(from, to)));
     }
+    table() { return this.c; }
+    invert() {
+        const m = new Connections();
+        this.c.forEach((tos, from) => {
+            tos.forEach(to => {
+                m.add(to, from);
+            });
+        });
+        return m;
+    }
 }
 const getCoord = (adjuster) => (gt) => (index) => {
     const { coord } = gt[index];

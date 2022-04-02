@@ -26,6 +26,18 @@ export class Connections {
   forEach(callback: (from: number, to: number) => void) {
     this.c.forEach((tos, from) => tos.forEach(to => callback(from, to)))
   }
+
+  table(): Map<number, Set<number>> { return this.c }
+
+  invert(): Connections {
+    const m = new Connections()
+    this.c.forEach((tos, from) => {
+      tos.forEach(to => {
+        m.add(to, from)
+      })
+    })
+    return m
+  }
 }
 
 const getCoord = (adjuster: (c: Coord) => Coord) => (gt: GateTable) => (index: number): Coord => {
