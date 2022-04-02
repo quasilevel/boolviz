@@ -1,3 +1,4 @@
+import Coord from "./coord.js";
 export class Connections {
     constructor() {
         this.c = new Map();
@@ -21,3 +22,31 @@ export class Connections {
         this.c.forEach((tos, from) => tos.forEach(to => callback(from, to)));
     }
 }
+const getCoord = (adjuster) => (gt) => (index) => {
+    const { coord } = gt[index];
+    return adjuster(coord);
+};
+const getAdjustedCoord = (left) => (g) => getCoord(c => {
+    const rect = g.getGridRect(c);
+    return new Coord((left) ? rect.x : (rect.x + rect.w), rect.y + (rect.h / 2));
+});
+const getFromCoord = getAdjustedCoord(false);
+const getToCoord = getAdjustedCoord(true);
+export const getCoordMappers = (g) => (gt) => [getFromCoord(g)(gt), getToCoord(g)(gt)];
+export const drawConnection = ((ctx) => (fromCoordMap, toCoordMap) => (from, to) => {
+    const [fcoord, tcoord] = [fromCoordMap(from), toCoordMap(to)];
+    ctx.beginPath();
+    ctx.moveTo(fcoord.x, fcoord.y);
+    ctx.bezierCurveTo(fcoord.x, fcoord.y, tcoord.x, tcoord.y, tcoord.x, tcoord.y);
+    ctx.stroke();
+    ctx.closePath();
+});
+export const drawConnections = (g) => (gt) => (c) => {
+    const { ctx } = g;
+    const [gfcoord, gtcoord] = getCoordMappers(g)(gt);
+    ctx.save();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "pink";
+    c.forEach(drawConnection(ctx)(gfcoord, gtcoord));
+    ctx.restore();
+};

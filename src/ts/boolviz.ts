@@ -1,4 +1,4 @@
-import { Connections } from './packages/connections.js'
+import { Connections, drawConnections as dc } from './packages/connections.js'
 import Coord from './packages/coord.js'
 import { Gate, GateDrawer, GateTable, GateType } from './packages/gates.js'
 import Grid, { Drawer, GridClickEvent } from './packages/grid.js'
@@ -36,6 +36,8 @@ const drawGateTable = ((g: Grid) => (table: GateTable) => (
   table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type) as Drawer))
 ))(gb)
 
+const drawConnections = dc(gb)(gt)
+
 addGate({
   type: GateType.IN_TERM, coord: new Coord(4, 3)
 })
@@ -52,11 +54,6 @@ const connTable = new Connections()
 connTable.add(0, 1)
 connTable.add(1, 2)
 connTable.add(1, 3)
-connTable.add(2, 3)
-
-connTable.deleteAll(2)
-
-connTable.forEach(console.log)
 
 type ProgramState = {
   gateAdditionRequest: {
@@ -83,6 +80,7 @@ const frame = (_: number) => {
   }
 
   drawGateTable(gt)
+  drawConnections(connTable)
 }
 
 requestAnimationFrame(frame)

@@ -1,4 +1,4 @@
-import { Connections } from './packages/connections.js';
+import { Connections, drawConnections as dc } from './packages/connections.js';
 import Coord from './packages/coord.js';
 import { GateDrawer, GateType } from './packages/gates.js';
 import Grid from './packages/grid.js';
@@ -25,6 +25,7 @@ const addGate = ((m, t) => (g) => {
     m.set(g.coord, t.length - 1);
 })(gateMap, gt);
 const drawGateTable = ((g) => (table) => (table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type)))))(gb);
+const drawConnections = dc(gb)(gt);
 addGate({
     type: GateType.IN_TERM, coord: new Coord(4, 3)
 });
@@ -41,9 +42,6 @@ const connTable = new Connections();
 connTable.add(0, 1);
 connTable.add(1, 2);
 connTable.add(1, 3);
-connTable.add(2, 3);
-connTable.deleteAll(2);
-connTable.forEach(console.log);
 const state = {
     gateAdditionRequest: null
 };
@@ -60,6 +58,7 @@ const frame = (_) => {
         });
     }
     drawGateTable(gt);
+    drawConnections(connTable);
 };
 requestAnimationFrame(frame);
 export const requestGateAddition = (t) => {
