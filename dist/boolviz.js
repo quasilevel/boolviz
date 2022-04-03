@@ -1,6 +1,5 @@
 import { Connections, drawConnections as dc } from './packages/connections.js';
-import Coord from './packages/coord.js';
-import { GateDrawer, GateType } from './packages/gates.js';
+import { GateDrawer } from './packages/gates.js';
 import Grid from './packages/grid.js';
 import Mouse from './packages/mouse.js';
 import SpatialMap from './packages/spatialmap.js';
@@ -26,30 +25,22 @@ const addGate = ((m, t) => (g) => {
 })(gateMap, gt);
 const drawGateTable = ((g) => (table) => (table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type)))))(gb);
 const drawConnections = dc(gb)(gt);
-addGate({
-    type: GateType.IN_TERM, coord: new Coord(4, 3)
-});
-addGate({
-    type: GateType.AND, coord: new Coord(6, 3)
-});
-addGate({
-    type: GateType.OUT_TERM, coord: new Coord(8, 3)
-});
-addGate({
-    type: GateType.OUT_TERM, coord: new Coord(8, 4)
-});
-addGate({
-    type: GateType.OUT_TERM, coord: new Coord(6, 2)
-});
-addGate({
-    type: GateType.IN_TERM, coord: new Coord(4, 4)
-});
 const connTable = new Connections();
-connTable.add(0, 1);
-connTable.add(0, 4);
-connTable.add(1, 2);
-connTable.add(1, 3);
-connTable.add(5, 1);
+const solution = new Map();
+const drawSolution = ((grid) => (sol) => {
+    ;
+    [...sol]
+        .filter(([_, val]) => val)
+        .map(([idx, _]) => (gt[idx].coord))
+        .map(c => grid.drawAt(c, (ctx, { x, y }) => {
+        ctx.beginPath();
+        ctx.strokeStyle = "deeppink";
+        ctx.lineWidth = 2;
+        ctx.arc(x, y, 35, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.closePath();
+    }));
+})(gb);
 const state = {
     gateAdditionRequest: null
 };
@@ -67,6 +58,7 @@ const frame = (_) => {
     }
     drawGateTable(gt);
     drawConnections(connTable);
+    drawSolution(solution);
 };
 requestAnimationFrame(frame);
 export const requestGateAddition = (t) => {
