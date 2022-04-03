@@ -37,6 +37,7 @@ export const GateArgCount = new Map([
     [GateType.NOR, 2],
 ]);
 export const GateSolver = new Map([
+    [GateType.OUT_TERM, ([a]) => a],
     [GateType.AND, ([a, b]) => a && b],
     [GateType.OR, ([a, b]) => a || b],
     [GateType.XOR, ([a, b]) => a !== b],
