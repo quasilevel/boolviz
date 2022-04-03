@@ -9,22 +9,25 @@ export var GateType;
     GateType["NAND"] = "nand";
     GateType["NOR"] = "nor";
 })(GateType || (GateType = {}));
-const drawer = (color) => (ctx, { x, y }) => {
-    ctx.beginPath();
-    ctx.fillStyle = color;
-    ctx.arc(x, y, 20, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.closePath();
+const drawer = (id) => {
+    const paths = [...document.querySelectorAll(`#${id} path`)]
+        .map(it => { var _a; return (_a = it.attributes.getNamedItem("d")) === null || _a === void 0 ? void 0 : _a.value; })
+        .filter(it => it !== undefined)
+        .map(it => new Path2D(it));
+    return (ctx, { x, y }) => {
+        ctx.translate(x - 30, y - 30);
+        paths.map(it => ctx.stroke(it));
+    };
 };
 export const GateDrawer = new Map([
-    [GateType.IN_TERM, drawer("pink")],
-    [GateType.OUT_TERM, drawer("deeppink")],
-    [GateType.AND, drawer("#ba2fce")],
-    [GateType.OR, drawer("#6552e3")],
-    [GateType.XOR, drawer("#d5a840")],
-    [GateType.NOT, drawer("#d55c40")],
-    [GateType.NAND, drawer("#41e187")],
-    [GateType.NOR, drawer("#3accee")],
+    [GateType.IN_TERM, drawer("in")],
+    [GateType.OUT_TERM, drawer("out")],
+    [GateType.AND, drawer("and")],
+    [GateType.OR, drawer("or")],
+    [GateType.XOR, drawer("xor")],
+    [GateType.NOT, drawer("not")],
+    [GateType.NAND, drawer("nand")],
+    [GateType.NOR, drawer("nor")],
 ]);
 export const GateArgCount = new Map([
     [GateType.IN_TERM, 0],

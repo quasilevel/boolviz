@@ -68,6 +68,8 @@ const state: ProgramState = {
 const frame = (_: number) => {
   requestAnimationFrame(frame)
   gb.ctx.clearRect(0, 0, canvas.width, canvas.height)
+  gb.ctx.lineWidth = 2
+  gb.ctx.strokeStyle = "pink"
   const { gateAdditionRequest: gar } = state
   if (gar !== null && !gateMap.has(gb.getCurrentBox())) {
     gb.drawUnderCurrentBox((ctx, coord) => {
