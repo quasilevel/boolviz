@@ -2,16 +2,17 @@
   --icon-size: 72px;
   --pallete-gap: 0.5em;
   --pallete-size: calc((var(--icon-size) * 2) + (var(--pallete-gap)));
+  --theme-bg: #561e43;
 }
 
 body {
   margin: 0px;
   padding: 0px;
-  background: #561e43;
+  background: var(--theme-bg);
 }
 
 #gates-pallete {
-  background: #561e43;
+  background: var(--theme-bg);
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
@@ -45,6 +46,14 @@ body {
   border-color: pink;
 }
 
+#gates-pallete .gate-con .icon {
+  transition: all 0.1s ease-in-out 0s;
+}
+
 #gates-pallete .gate-con[data-state="selected"] {
   background: pink;
+}
+
+#gates-pallete .gate-con[data-state="selected"] .icon {
+  stroke: var(--theme-bg);
 }

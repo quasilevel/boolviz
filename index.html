@@ -5,17 +5,52 @@
   </head>
   <body>
     <div id="gates-pallete">
-      <div data-type='in' class='gate-con'></div>
-      <div data-type='out' class='gate-con'></div>
-      <div data-type='not' class='gate-con'></div>
-      <div data-type='and' class='gate-con'></div>
-      <div data-type='or' class='gate-con'></div>
-      <div data-type='xor' class='gate-con'></div>
-      <div data-type='nand' class='gate-con'></div>
-      <div data-type='nor' class='gate-con'></div>
+      <div data-type='in' class='gate-con'>
+        <svg width="60px" height="60px" viewbox="0 0 60 60">
+          <use class="icon" fill="transparent" stroke-width=2 stroke="pink" xlink:href="#and">
+        </svg>
+      </div>
+      <div data-type='out' class='gate-con'>
+        <svg width="60px" height="60px" viewbox="0 0 60 60">
+          <use class="icon" fill="transparent" stroke-width=2 stroke="pink" xlink:href="#and">
+        </svg>
+      </div>
+      <div data-type='not' class='gate-con'>
+        <svg width="60px" height="60px" viewbox="0 0 60 60">
+          <use class="icon" fill="transparent" stroke-width=2 stroke="pink" xlink:href="#and">
+        </svg>
+      </div>
+      <div data-type='and' class='gate-con'>
+        <svg width="60px" height="60px" viewbox="0 0 60 60">
+          <use class="icon" fill="transparent" stroke-width=2 stroke="pink" xlink:href="#and">
+        </svg>
+      </div>
+      <div data-type='or' class='gate-con'>
+        <svg width="60px" height="60px" viewbox="0 0 60 60">
+          <use class="icon" fill="transparent" stroke-width=2 stroke="pink" xlink:href="#and">
+        </svg>
+      </div>
+      <div data-type='xor' class='gate-con'>
+        <svg width="60px" height="60px" viewbox="0 0 60 60">
+          <use class="icon" fill="transparent" stroke-width=2 stroke="pink" xlink:href="#and">
+        </svg>
+      </div>
+      <div data-type='nand' class='gate-con'>
+        <svg width="60px" height="60px" viewbox="0 0 60 60">
+          <use class="icon" fill="transparent" stroke-width=2 stroke="pink" xlink:href="#and">
+        </svg>
+      </div>
+      <div data-type='nor' class='gate-con'>
+        <svg width="60px" height="60px" viewbox="0 0 60 60">
+          <use class="icon" fill="transparent" stroke-width=2 stroke="pink" xlink:href="#and">
+        </svg>
+      </div>
     </div>
     <canvas id="boolviz"></canvas>
     <script type="module" src="/dist/ui.js"></script>
     <script type="module" src="/dist/boolviz.js"></script>
+    <svg style="display: none" viewbox="0 0 60 60">
+      <path id="and" d="M14 19H36.6284C40.0798 19 42.632 20.3539 44.3419 22.35C46.0695 24.3669 46.9766 27.0894 46.9996 29.8466C47.0225 32.6037 46.1609 35.3192 44.4506 37.3289C42.7588 39.3168 40.1862 40.6765 36.6284 40.6765H14V19Z"></path>
+    </svg>
   </body>
 </html>
