@@ -6,21 +6,36 @@ export const listInvalidGates = (gt, conns) => {
         .filter(([_, [actual, expexted]]) => actual !== expexted);
     return new Map(bad);
 };
-export const circuitSolver = (gt, conns) => {
-    const inputmap = conns.table();
-    const solveFor = (index, solution) => {
+export const circuitSolver = (gt, output) => (solution) => {
+    const outmap = output.table();
+    const inputmap = output.invert().table();
+    const solveIndex = (index) => {
         var _a;
+        const inputs = inputmap.get(index);
+        const invals = [...inputs].map(it => solveFor(it));
+        const val = (_a = GateSolver.get(gt[index].type)) === null || _a === void 0 ? void 0 : _a(invals);
+        if (typeof val === "undefined") {
+            throw new Error(`Invalid index in input: ${index}`);
+        }
+        return val;
+    };
+    const solveFor = (index) => {
         if (!solution.has(index)) {
-            const inputs = inputmap.get(index);
-            const invals = [...inputs].map(it => solveFor(it, solution));
-            const val = (_a = GateSolver.get(gt[index].type)) === null || _a === void 0 ? void 0 : _a(invals);
-            if (typeof val === "undefined") {
-                throw new Error(`Invalid index in input: ${index}`);
-            }
+            const val = solveIndex(index);
             solution.set(index, val);
             return val;
         }
         return solution.get(index);
     };
-    return solveFor;
+    const updateFor = (index, newval) => {
+        solution.set(index, newval);
+        if (!outmap.has(index)) {
+            return;
+        }
+        const outs = [...outmap.get(index)]
+            .map((idx) => [idx, solveIndex(idx)])
+            .filter(([idx, nv]) => solution.get(idx) !== nv);
+        outs.map(([idx, nv]) => updateFor(idx, nv));
+    };
+    return [solveFor, updateFor];
 };

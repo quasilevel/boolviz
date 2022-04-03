@@ -9,18 +9,24 @@ export const listInvalidGates = (gt: GateTable, conns: Connections): Map<number,
   return new Map(bad)
 }
 
-export const circuitSolver = (gt: GateTable, conns: Connections) => {
-  const inputmap = conns.table()
-  const solveFor = (index: number, solution: Map<number, boolean>): boolean => {
+export const circuitSolver = 
+(gt: GateTable, output: Connections) => 
+(solution: Map<number, boolean>): [(_i: number) => boolean, (_i: number, _b: boolean) => void] => {
+  const outmap = output.table()
+  const inputmap = output.invert().table()
+  const solveIndex = (index: number): boolean => {
+    const inputs = inputmap.get(index) as Set<number>
+    const invals = [...inputs].map(it => solveFor(it))
+    const val = GateSolver.get(gt[index].type)?.(invals)
+    if (typeof val === "undefined") {
+      throw new Error(`Invalid index in input: ${index}`)
+    }
+    return val
+  }
+
+  const solveFor = (index: number): boolean => {
     if (!solution.has(index)) {
-      const inputs = inputmap.get(index) as Set<number>
-      const invals = [...inputs].map(it => solveFor(it, solution))
-      const val = GateSolver.get(gt[index].type)?.(invals)
-
-      if (typeof val === "undefined") {
-        throw new Error(`Invalid index in input: ${index}`)
-      }
-
+      const val = solveIndex(index)
       solution.set(index, val)
       return val
     }
@@ -28,5 +34,19 @@ export const circuitSolver = (gt: GateTable, conns: Connections) => {
     return solution.get(index) as boolean
   }
 
-  return solveFor
+  const updateFor = (index: number, newval: boolean) => {
+    solution.set(index, newval)
+
+    if (!outmap.has(index)) {
+      return
+    }
+
+    const outs = [...(outmap.get(index) as Set<number>)]
+    .map((idx): [number, boolean] => [idx, solveIndex(idx)])
+    .filter(([idx, nv]) => solution.get(idx) !== nv)
+
+    outs.map(([idx, nv]) => updateFor(idx, nv))
+  }
+
+  return [solveFor, updateFor]
 }
