@@ -1,4 +1,4 @@
-import { Connections, drawConnections as dc } from './packages/connections.js';
+import { Connections, drawConnection as dc, drawConnections as dcs, getCoordMappers } from './packages/connections.js';
 import { GateDrawer, GateType } from './packages/gates.js';
 import Grid from './packages/grid.js';
 import Mouse from './packages/mouse.js';
@@ -26,7 +26,7 @@ const addGate = ((m, t) => (g) => {
     m.set(g.coord, t.length - 1);
 })(gateMap, gt);
 const drawGateTable = ((g) => (table) => (table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type)))))(gb);
-const drawConnections = dc(gb)(gt);
+const drawConnections = dcs(gb)(gt);
 const connTable = new Connections();
 const solution = new Map();
 const state = {
@@ -72,13 +72,22 @@ addEventListener("grid_click", (({ detail }) => {
 const isValidConnection = (from, to) => {
     return from.x < to.x;
 };
+const [fmapper, tmapper] = getCoordMappers(gb)(gt);
+const drawConnection = dc(gb.ctx)(fmapper, tmapper);
+const previewConnection = (fidx, tidx) => {
+    drawConnection(fidx, tidx);
+};
+const canPreviewConnection = (fidx, tidx) => {
+    return isValidConnection(gt[fidx].coord, gt[tidx].coord);
+};
 const frame = (_) => {
     requestAnimationFrame(frame);
     gb.ctx.clearRect(0, 0, canvas.width, canvas.height);
     gb.ctx.lineWidth = 2;
     gb.ctx.strokeStyle = "pink";
     const { gateAdditionRequest: gar } = state;
-    if (gar !== null && !gateMap.has(gb.getCurrentBox())) {
+    const currentIdx = gateMap.get(gb.getCurrentBox());
+    if (gar !== null && typeof currentIdx === "undefined") {
         gb.drawUnderCurrentBox((ctx, coord) => {
             ctx.save();
             ctx.globalAlpha = 0.4;
@@ -89,6 +98,11 @@ const frame = (_) => {
     if (state.selected !== null) {
         const g = gt[state.selected];
         gb.drawAt(g.coord, drawSelected);
+    }
+    if (typeof currentIdx !== "undefined" &&
+        state.connectionPending !== null &&
+        canPreviewConnection(state.connectionPending.idx, currentIdx)) {
+        previewConnection(state.connectionPending.idx, currentIdx);
     }
     drawGateTable(gt);
     drawConnections(connTable);
@@ -139,6 +153,7 @@ export const requestNewConnection = (idx) => {
             res(3 /* Rejected */);
             return;
         }
+        state.connectionPending = { idx: idx };
         addEventListener("grid_click", l);
     });
 };
