@@ -57,13 +57,13 @@ gatesButtons.forEach(it => {
 });
 const deleteButton = document.querySelector("#delete-widget");
 deleteButton === null || deleteButton === void 0 ? void 0 : deleteButton.addEventListener("click", () => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     if (typeof program.selected === "undefined") {
         return;
     }
-    console.log(program.selected);
-    const res = yield deleteGate(program.selected);
+    yield deleteGate(program.selected);
     deselect();
-    console.log(res);
+    (_a = document.querySelector("canvas")) === null || _a === void 0 ? void 0 : _a.click();
 }));
 const moveUnder = (c) => {
     deleteButton.style.left = `${c.x}px`;
@@ -92,12 +92,12 @@ const selectionEv = ({ detail: data }) => __awaiter(void 0, void 0, void 0, func
     addEventListener("gate_click", selectionEv);
 });
 const flippingEv = ({ detail: data }) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _b;
     if (data === null)
         return;
     if (data.gate.type !== GateType.IN_TERM)
         return;
-    (_a = program.flipper) === null || _a === void 0 ? void 0 : _a.call(program, data.index);
+    (_b = program.flipper) === null || _b === void 0 ? void 0 : _b.call(program, data.index);
 });
 const events = new Map([
     [State.Designing, selectionEv],

@@ -65,11 +65,10 @@ deleteButton?.addEventListener("click", async () => {
     return
   }
 
-  console.log(program.selected)
-
-  const res = await deleteGate(program.selected)
+  await deleteGate(program.selected)
   deselect()
-  console.log(res)
+
+  document.querySelector("canvas")?.click()
 })
 
 const moveUnder = (c: Coord) => {
