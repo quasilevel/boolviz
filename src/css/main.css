@@ -57,3 +57,31 @@ body {
 #gates-pallete .gate-con[data-state="selected"] .icon {
   stroke: var(--theme-bg);
 }
+
+#command-pallete {
+  position: fixed;
+  bottom: 2em;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+}
+
+#command-pallete button:first-child {
+  border-bottom-left-radius: 6px;
+  border-top-left-radius: 6px;
+}
+
+#command-pallete button:last-child {
+  border-bottom-right-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+#command-pallete button {
+  background: pink;
+  border: none;
+  outline: none;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  padding: 0px;
+}
