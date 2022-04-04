@@ -112,7 +112,11 @@ const drawConnection = dc(gb.ctx)(fmapper, tmapper)
 
 const previewConnection = ((ctx: CanvasRenderingContext2D) => (fidx: number, tidx: number) => {
   ctx.save()
-  ctx.globalAlpha = 0.4
+  if (connTable.has(fidx, tidx)) {
+    ctx.strokeStyle = "deeppink"
+  } else {
+    ctx.globalAlpha = 0.4
+  }
   drawConnection(fidx, tidx)
   ctx.restore()
 })(gb.ctx)
@@ -144,15 +148,15 @@ const frame = (_: number) => {
     gb.drawAt(g.coord, drawSelected)
   }
 
+  drawGateTable(gt)
+  drawConnections(connTable)
+  drawSolution(solution)
+
   if (typeof currentIdx !== "undefined" &&
       state.connectionPending !== null &&
       canPreviewConnection(state.connectionPending.idx as number, currentIdx as number)) {
     previewConnection(state.connectionPending.idx as number, currentIdx)
   }
-
-  drawGateTable(gt)
-  drawConnections(connTable)
-  drawSolution(solution)
 }
 
 requestAnimationFrame(frame)
@@ -191,6 +195,13 @@ export const requestNewConnection = (idx: number): Promise<ConnectionResult> => 
     const fromGate = gt[idx] as Gate
     if (!isValidConnection(fromGate.coord, ev.detail.coord)) {
       res(ConnectionResult.Rejected)
+      cleanUp()
+      return
+    }
+
+    if (connTable.has(idx, toIndex)) {
+      res(ConnectionResult.Disconnected)
+      connTable.delete(idx, toIndex)
       cleanUp()
       return
     }

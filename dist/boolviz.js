@@ -85,7 +85,12 @@ const [fmapper, tmapper] = getCoordMappers(gb)(gt);
 const drawConnection = dc(gb.ctx)(fmapper, tmapper);
 const previewConnection = ((ctx) => (fidx, tidx) => {
     ctx.save();
-    ctx.globalAlpha = 0.4;
+    if (connTable.has(fidx, tidx)) {
+        ctx.strokeStyle = "deeppink";
+    }
+    else {
+        ctx.globalAlpha = 0.4;
+    }
     drawConnection(fidx, tidx);
     ctx.restore();
 })(gb.ctx);
@@ -111,14 +116,14 @@ const frame = (_) => {
         const g = gt[state.selected];
         gb.drawAt(g.coord, drawSelected);
     }
+    drawGateTable(gt);
+    drawConnections(connTable);
+    drawSolution(solution);
     if (typeof currentIdx !== "undefined" &&
         state.connectionPending !== null &&
         canPreviewConnection(state.connectionPending.idx, currentIdx)) {
         previewConnection(state.connectionPending.idx, currentIdx);
     }
-    drawGateTable(gt);
-    drawConnections(connTable);
-    drawSolution(solution);
 };
 requestAnimationFrame(frame);
 export const selectGate = (idx) => {
@@ -147,6 +152,12 @@ export const requestNewConnection = (idx) => {
         const fromGate = gt[idx];
         if (!isValidConnection(fromGate.coord, ev.detail.coord)) {
             res(3 /* Rejected */);
+            cleanUp();
+            return;
+        }
+        if (connTable.has(idx, toIndex)) {
+            res(1 /* Disconnected */);
+            connTable.delete(idx, toIndex);
             cleanUp();
             return;
         }
