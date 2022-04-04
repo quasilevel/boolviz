@@ -74,9 +74,12 @@ const isValidConnection = (from, to) => {
 };
 const [fmapper, tmapper] = getCoordMappers(gb)(gt);
 const drawConnection = dc(gb.ctx)(fmapper, tmapper);
-const previewConnection = (fidx, tidx) => {
+const previewConnection = ((ctx) => (fidx, tidx) => {
+    ctx.save();
+    ctx.globalAlpha = 0.4;
     drawConnection(fidx, tidx);
-};
+    ctx.restore();
+})(gb.ctx);
 const canPreviewConnection = (fidx, tidx) => {
     return isValidConnection(gt[fidx].coord, gt[tidx].coord);
 };

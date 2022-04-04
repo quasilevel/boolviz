@@ -110,9 +110,12 @@ const isValidConnection = (from: Coord, to: Coord): boolean => {
 const [fmapper, tmapper] = getCoordMappers(gb)(gt)
 const drawConnection = dc(gb.ctx)(fmapper, tmapper)
 
-const previewConnection = (fidx: number, tidx: number) => {
+const previewConnection = ((ctx: CanvasRenderingContext2D) => (fidx: number, tidx: number) => {
+  ctx.save()
+  ctx.globalAlpha = 0.4
   drawConnection(fidx, tidx)
-}
+  ctx.restore()
+})(gb.ctx)
 
 const canPreviewConnection = (fidx: number, tidx: number): boolean => {
   return isValidConnection(
