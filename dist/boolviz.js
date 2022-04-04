@@ -1,8 +1,10 @@
 import { Connections, drawConnections as dc } from './packages/connections.js';
-import { GateDrawer } from './packages/gates.js';
+import { GateDrawer, GateType } from './packages/gates.js';
 import Grid from './packages/grid.js';
 import Mouse from './packages/mouse.js';
 import SpatialMap from './packages/spatialmap.js';
+import Coord from './packages/coord.js';
+import { circuitSolver } from './packages/solver.js';
 const $ = document;
 const canvas = $.querySelector('canvas#boolviz');
 if (canvas === null) {
@@ -131,3 +133,30 @@ export const requestGateAddition = (t) => {
         addEventListener("grid_click", l);
     });
 };
+// test data
+(() => {
+    ;
+    [
+        [GateType.IN_TERM, 3, 2],
+        [GateType.IN_TERM, 5, 3],
+        [GateType.NOT, 5, 2],
+        [GateType.AND, 7, 2],
+        [GateType.XOR, 7, 3],
+        [GateType.OUT_TERM, 9, 2],
+        [GateType.OUT_TERM, 9, 3],
+    ].map(([t, x, y]) => addGate({
+        type: t, coord: new Coord(x, y)
+    }));
+    [
+        [0, 2],
+        [2, 3],
+        [1, 4],
+        [1, 3],
+        [2, 4],
+        [3, 5],
+        [4, 6],
+    ].map(([f, t]) => connTable.add(f, t));
+    solution.set(0, false).set(1, true);
+    const [solveFor, _] = circuitSolver(gt, connTable)(solution);
+    [5, 6].map(solveFor);
+});
