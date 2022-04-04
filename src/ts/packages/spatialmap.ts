@@ -24,4 +24,13 @@ export default class SpatialMap<T> {
   get(c: Coord): T | undefined {
     return this.m.get(c.x)?.get(c.y)
   }
+
+  remove(c: Coord): boolean {
+    if (!this.has(c)) {
+      return false
+    }
+
+    this.m.get(c.x)?.delete(c.y)
+    return true
+  }
 }

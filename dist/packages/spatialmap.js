@@ -18,4 +18,12 @@ export default class SpatialMap {
         var _a;
         return (_a = this.m.get(c.x)) === null || _a === void 0 ? void 0 : _a.get(c.y);
     }
+    remove(c) {
+        var _a;
+        if (!this.has(c)) {
+            return false;
+        }
+        (_a = this.m.get(c.x)) === null || _a === void 0 ? void 0 : _a.delete(c.y);
+        return true;
+    }
 }
