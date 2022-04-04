@@ -85,3 +85,10 @@ body {
   cursor: pointer;
   padding: 0px;
 }
+
+#logo {
+  position: fixed;
+  top: 2em;
+  left: 50%;
+  transform: translateX(-50%);
+}
