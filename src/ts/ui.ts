@@ -1,4 +1,4 @@
-import { requestGateAddition, GateClickEvent, selectGate, deselectGate, requestNewConnection } from "./boolviz.js"
+import { requestGateAddition, GateClickEvent, selectGate, deselectGate, requestNewConnection, validateCircuit, requestCircuitEval } from "./boolviz.js"
 import { GateType } from "./packages/gates.js"
 
 const $ = document
@@ -56,3 +56,13 @@ const selectionEv = async ({ detail: data }: CustomEvent<GateClickEvent>) => {
 }
 
 addEventListener("gate_click", (selectionEv as unknown) as EventListener)
+
+document.querySelector("button#run")?.addEventListener("click", async () => {
+  const invalid = await validateCircuit()
+  if (invalid.size === 0) {
+    console.error(invalid)
+    return
+  }
+
+  await requestCircuitEval()
+})

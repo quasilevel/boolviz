@@ -7,7 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { requestGateAddition, selectGate, deselectGate, requestNewConnection } from "./boolviz.js";
+var _a;
+import { requestGateAddition, selectGate, deselectGate, requestNewConnection, validateCircuit, requestCircuitEval } from "./boolviz.js";
 import { GateType } from "./packages/gates.js";
 const $ = document;
 const gateEnumMap = new Map([
@@ -56,3 +57,11 @@ const selectionEv = ({ detail: data }) => __awaiter(void 0, void 0, void 0, func
     addEventListener("gate_click", selectionEv);
 });
 addEventListener("gate_click", selectionEv);
+(_a = document.querySelector("button#run")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => __awaiter(void 0, void 0, void 0, function* () {
+    const invalid = yield validateCircuit();
+    if (invalid.size === 0) {
+        console.error(invalid);
+        return;
+    }
+    yield requestCircuitEval();
+}));

@@ -4,7 +4,7 @@ import Grid, { Drawer, GridClickEvent } from './packages/grid.js'
 import Mouse from './packages/mouse.js'
 import SpatialMap from './packages/spatialmap.js'
 import Coord from './packages/coord.js'
-import { circuitSolver } from './packages/solver.js'
+import { circuitSolver, listInvalidGates } from './packages/solver.js'
 const $ = document
 
 const canvas = $.querySelector('canvas#boolviz') as HTMLCanvasElement
@@ -253,6 +253,31 @@ export const requestGateAddition = (t: GateType): Promise<AdditionResult> => {
 
     addEventListener("grid_click", l as EventListener)
   })
+}
+
+const filterGate = (table: GateTable, type: GateType): number[] => {
+  return table
+  .map((it, idx): [number, GateType] => [idx, it.type])
+  .filter(([_, t]) => t === type)
+  .map(([idx, _]) => idx)
+}
+
+export const validateCircuit = async () => {
+  return listInvalidGates(gt, connTable)
+}
+
+export const requestCircuitEval = async () => {
+  const inputs = filterGate(gt, GateType.IN_TERM)
+  const outputs = filterGate(gt, GateType.OUT_TERM)
+
+  solution.clear()
+
+  inputs.map(it => solution.set(it, false))
+  
+  const [solveFor, updateFor] = circuitSolver(gt, connTable)(solution)
+  outputs.map(solveFor)
+
+  return updateFor
 }
 
 // test data

@@ -1,10 +1,19 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import { Connections, drawConnection as dc, drawConnections as dcs, getCoordMappers } from './packages/connections.js';
 import { GateDrawer, GateType } from './packages/gates.js';
 import Grid from './packages/grid.js';
 import Mouse from './packages/mouse.js';
 import SpatialMap from './packages/spatialmap.js';
 import Coord from './packages/coord.js';
-import { circuitSolver } from './packages/solver.js';
+import { circuitSolver, listInvalidGates } from './packages/solver.js';
 const $ = document;
 const canvas = $.querySelector('canvas#boolviz');
 if (canvas === null) {
@@ -188,6 +197,24 @@ export const requestGateAddition = (t) => {
         addEventListener("grid_click", l);
     });
 };
+const filterGate = (table, type) => {
+    return table
+        .map((it, idx) => [idx, it.type])
+        .filter(([_, t]) => t === type)
+        .map(([idx, _]) => idx);
+};
+export const validateCircuit = () => __awaiter(void 0, void 0, void 0, function* () {
+    return listInvalidGates(gt, connTable);
+});
+export const requestCircuitEval = () => __awaiter(void 0, void 0, void 0, function* () {
+    const inputs = filterGate(gt, GateType.IN_TERM);
+    const outputs = filterGate(gt, GateType.OUT_TERM);
+    solution.clear();
+    inputs.map(it => solution.set(it, false));
+    const [solveFor, updateFor] = circuitSolver(gt, connTable)(solution);
+    outputs.map(solveFor);
+    return updateFor;
+});
 // test data
 (() => {
     ;
