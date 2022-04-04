@@ -28,11 +28,13 @@ const gb = new Grid({
     mouse: mouse,
     boxSize: 100,
 });
-const gt = [];
+const gt = new Map();
+let currentId = 0;
 const gateMap = new SpatialMap();
 const addGate = ((m, t) => (g) => {
-    t.push(g);
-    m.set(g.coord, t.length - 1);
+    t.set(currentId, g);
+    m.set(g.coord, currentId);
+    currentId++;
 })(gateMap, gt);
 const drawGateTable = ((g) => (table) => (table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type)))))(gb);
 const drawConnections = dcs(gb)(gt);
@@ -47,7 +49,7 @@ const drawSolution = ((grid) => (sol) => {
     ;
     [...sol]
         .filter(([idx, val]) => val && (idx !== state.selected))
-        .map(([idx, _]) => (gt[idx].coord))
+        .map(([idx, _]) => { var _a; return (_a = gt.get(idx)) === null || _a === void 0 ? void 0 : _a.coord; })
         .map(c => grid.drawAt(c, (ctx, { x, y }) => {
         ctx.beginPath();
         ctx.strokeStyle = "deeppink";
@@ -74,7 +76,7 @@ addEventListener("grid_click", (({ detail }) => {
     dispatchEvent(new CustomEvent("gate_click", {
         detail: {
             index: gateIndex,
-            gate: gt[gateIndex],
+            gate: gt.get(gateIndex),
         }
     }));
 }));
@@ -95,7 +97,7 @@ const previewConnection = ((ctx) => (fidx, tidx) => {
     ctx.restore();
 })(gb.ctx);
 const canPreviewConnection = (fidx, tidx) => {
-    return isValidConnection(gt[fidx].coord, gt[tidx].coord);
+    return isValidConnection(gt.get(fidx).coord, gt.get(tidx).coord);
 };
 const frame = (_) => {
     requestAnimationFrame(frame);
@@ -113,7 +115,7 @@ const frame = (_) => {
         });
     }
     if (state.selected !== null) {
-        const g = gt[state.selected];
+        const g = gt.get(state.selected);
         gb.drawAt(g.coord, drawSelected);
     }
     drawGateTable(gt);
@@ -127,7 +129,7 @@ const frame = (_) => {
 };
 requestAnimationFrame(frame);
 export const selectGate = (idx) => {
-    if (typeof gt[idx] === "undefined") {
+    if (typeof gt.get(idx) === "undefined") {
         return false;
     }
     state.selected = idx;
@@ -149,7 +151,7 @@ export const requestNewConnection = (idx) => {
             cleanUp();
             return;
         }
-        const fromGate = gt[idx];
+        const fromGate = gt.get(idx);
         if (!isValidConnection(fromGate.coord, ev.detail.coord)) {
             res(3 /* Rejected */);
             cleanUp();
@@ -172,7 +174,7 @@ export const requestNewConnection = (idx) => {
             removeEventListener("grid_click", l);
             state.connectionPending = null;
         };
-        if (gt[idx] === undefined) {
+        if (gt.get(idx) === undefined) {
             res(3 /* Rejected */);
             return;
         }
@@ -209,9 +211,8 @@ export const requestGateAddition = (t) => {
     });
 };
 const filterGate = (table, type) => {
-    return table
-        .map((it, idx) => [idx, it.type])
-        .filter(([_, t]) => t === type)
+    return [...table]
+        .filter(([_, t]) => t.type === type)
         .map(([idx, _]) => idx);
 };
 export const validateCircuit = () => __awaiter(void 0, void 0, void 0, function* () {

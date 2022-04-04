@@ -25,12 +25,14 @@ const gb = new Grid({
   boxSize: 100,
 })
 
-const gt: GateTable = []
+const gt: GateTable = new Map()
+let currentId = 0
 
 const gateMap = new SpatialMap<number>()
 const addGate = ((m: SpatialMap<number>, t: GateTable) => (g: Gate) => {
-  t.push(g)
-  m.set(g.coord, t.length - 1)
+  t.set(currentId, g)
+  m.set(g.coord, currentId)
+  currentId++
 })(gateMap, gt)
 
 const drawGateTable = ((g: Grid) => (table: GateTable) => (
@@ -62,7 +64,7 @@ const state: ProgramState = {
 const drawSolution = ((grid: Grid) => (sol: Map<number, boolean>) => {
   ;[...sol]
   .filter(([idx, val]) => val && (idx !== state.selected))
-  .map(([idx, _]) => (gt[idx].coord))
+  .map(([idx, _]) => (gt.get(idx)?.coord as Coord))
   .map(c => grid.drawAt(c, (ctx, {x, y}) => {
     ctx.beginPath()
     ctx.strokeStyle = "deeppink"
@@ -97,7 +99,7 @@ addEventListener("grid_click", (({ detail }: CustomEvent<GridClickEvent>) => {
   dispatchEvent(new CustomEvent<GateClickEvent>("gate_click", {
     detail: {
       index: gateIndex as number,
-      gate: gt[gateIndex] as Gate,
+      gate: gt.get(gateIndex) as Gate,
     }
   }))
 }) as EventListener)
@@ -123,7 +125,7 @@ const previewConnection = ((ctx: CanvasRenderingContext2D) => (fidx: number, tid
 
 const canPreviewConnection = (fidx: number, tidx: number): boolean => {
   return isValidConnection(
-    gt[fidx].coord, gt[tidx].coord
+    (gt.get(fidx) as Gate).coord, (gt.get(tidx) as Gate).coord
   )
 }
 
@@ -144,7 +146,7 @@ const frame = (_: number) => {
   }
 
   if (state.selected !== null) {
-    const g = gt[state.selected] as Gate
+    const g = gt.get(state.selected) as Gate
     gb.drawAt(g.coord, drawSelected)
   }
 
@@ -162,7 +164,7 @@ const frame = (_: number) => {
 requestAnimationFrame(frame)
 
 export const selectGate = (idx: number) => {
-  if (typeof gt[idx] === "undefined") {
+  if (typeof gt.get(idx) === "undefined") {
     return false
   }
 
@@ -192,7 +194,7 @@ export const requestNewConnection = (idx: number): Promise<ConnectionResult> => 
       return
     }
 
-    const fromGate = gt[idx] as Gate
+    const fromGate = gt.get(idx) as Gate
     if (!isValidConnection(fromGate.coord, ev.detail.coord)) {
       res(ConnectionResult.Rejected)
       cleanUp()
@@ -218,7 +220,7 @@ export const requestNewConnection = (idx: number): Promise<ConnectionResult> => 
       removeEventListener("grid_click", l)
       state.connectionPending = null
     }
-    if (gt[idx] === undefined) {
+    if (gt.get(idx) === undefined) {
       res(ConnectionResult.Rejected)
       return
     }
@@ -267,9 +269,8 @@ export const requestGateAddition = (t: GateType): Promise<AdditionResult> => {
 }
 
 const filterGate = (table: GateTable, type: GateType): number[] => {
-  return table
-  .map((it, idx): [number, GateType] => [idx, it.type])
-  .filter(([_, t]) => t === type)
+  return [...table]
+  .filter(([_, t]) => t.type === type)
   .map(([idx, _]) => idx)
 }
 

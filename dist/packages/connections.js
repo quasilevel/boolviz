@@ -37,7 +37,7 @@ export class Connections {
     }
 }
 const getCoord = (adjuster) => (gt) => (index) => {
-    const { coord } = gt[index];
+    const { coord } = gt.get(index);
     return adjuster(coord);
 };
 const getAdjustedCoord = (left) => (g) => getCoord(c => {

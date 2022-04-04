@@ -2,7 +2,7 @@ import { GateArgCount, GateSolver } from "./gates.js";
 export const listInvalidGates = (gt, conns) => {
     const invt = conns.invert().table();
     const bad = [...invt.entries()]
-        .map(([to, froms]) => [to, [froms.size, GateArgCount.get(gt[to].type)]])
+        .map(([to, froms]) => [to, [froms.size, GateArgCount.get(gt.get(to).type)]])
         .filter(([_, [actual, expexted]]) => actual !== expexted);
     return new Map(bad);
 };
@@ -13,7 +13,7 @@ export const circuitSolver = (gt, output) => (solution) => {
         var _a;
         const inputs = inputmap.get(index);
         const invals = [...inputs].map(it => solveFor(it));
-        const val = (_a = GateSolver.get(gt[index].type)) === null || _a === void 0 ? void 0 : _a(invals);
+        const val = (_a = GateSolver.get(gt.get(index).type)) === null || _a === void 0 ? void 0 : _a(invals);
         if (typeof val === "undefined") {
             throw new Error(`Invalid index in input: ${index}`);
         }

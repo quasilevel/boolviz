@@ -1,5 +1,5 @@
 import Coord from "./coord.js"
-import { GateTable } from "./gates.js"
+import { GateTable, Gate } from "./gates.js"
 import Grid from "./grid.js"
 
 const CONNECTION_JOIN_GAP = 15 // px
@@ -45,7 +45,7 @@ export class Connections {
 }
 
 const getCoord = (adjuster: (c: Coord) => Coord) => (gt: GateTable) => (index: number): Coord => {
-  const { coord } = gt[index]
+  const { coord } = gt.get(index) as Gate
   return adjuster(coord)
 }
 

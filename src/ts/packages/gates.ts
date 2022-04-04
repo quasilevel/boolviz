@@ -61,4 +61,4 @@ export type Gate = {
   coord: Coord
 }
 
-export type GateTable = Gate[]
+export type GateTable = Map<number, Gate>

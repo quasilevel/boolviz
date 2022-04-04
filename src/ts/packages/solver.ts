@@ -1,10 +1,10 @@
-import { GateArgCount, GateSolver, GateTable } from "./gates.js"
+import { Gate, GateArgCount, GateSolver, GateTable } from "./gates.js"
 import { Connections } from "./connections.js"
 
 export const listInvalidGates = (gt: GateTable, conns: Connections): Map<number, [number, number]> => {
   const invt = conns.invert().table()
   const bad = [...invt.entries()]
-  .map(([to, froms]): [number, [number, number]] => [to, [froms.size, GateArgCount.get(gt[to].type) as number]])
+  .map(([to, froms]): [number, [number, number]] => [to, [froms.size, GateArgCount.get((gt.get(to) as Gate).type) as number]])
   .filter(([_, [actual, expexted]]) => actual !== expexted)
   return new Map(bad)
 }
@@ -17,7 +17,7 @@ export const circuitSolver =
   const solveIndex = (index: number): boolean => {
     const inputs = inputmap.get(index) as Set<number>
     const invals = [...inputs].map(it => solveFor(it))
-    const val = GateSolver.get(gt[index].type)?.(invals)
+    const val = GateSolver.get((gt.get(index) as Gate).type)?.(invals)
     if (typeof val === "undefined") {
       throw new Error(`Invalid index in input: ${index}`)
     }
