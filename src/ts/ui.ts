@@ -41,8 +41,9 @@ gatesButtons.forEach(it => {
 })
 
 const selectionEv = async ({ detail: data }: CustomEvent<GateClickEvent>) => {
-  if (!data) {
+  if (data === null) {
     deselectGate()
+    return
   }
 
   selectGate(data.index)

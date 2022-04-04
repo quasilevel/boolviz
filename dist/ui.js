@@ -45,8 +45,9 @@ gatesButtons.forEach(it => {
     }));
 });
 const selectionEv = ({ detail: data }) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!data) {
+    if (data === null) {
         deselectGate();
+        return;
     }
     selectGate(data.index);
     removeEventListener("gate_click", selectionEv);
