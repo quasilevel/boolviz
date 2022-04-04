@@ -59,7 +59,7 @@ addEventListener("gate_click", (selectionEv as unknown) as EventListener)
 
 document.querySelector("button#run")?.addEventListener("click", async () => {
   const invalid = await validateCircuit()
-  if (invalid.size === 0) {
+  if (invalid.size !== 0) {
     console.error(invalid)
     return
   }

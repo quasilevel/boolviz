@@ -59,7 +59,7 @@ const selectionEv = ({ detail: data }) => __awaiter(void 0, void 0, void 0, func
 addEventListener("gate_click", selectionEv);
 (_a = document.querySelector("button#run")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => __awaiter(void 0, void 0, void 0, function* () {
     const invalid = yield validateCircuit();
-    if (invalid.size === 0) {
+    if (invalid.size !== 0) {
         console.error(invalid);
         return;
     }
