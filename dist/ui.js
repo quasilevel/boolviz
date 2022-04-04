@@ -9,6 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { requestGateAddition, selectGate, deselectGate, requestNewConnection, validateCircuit, requestCircuitEval, endCircuitEval } from "./boolviz.js";
 import { GateType } from "./packages/gates.js";
+setTimeout(() => {
+    document.body.classList.remove("hide-el");
+}, 1200);
 const $ = document;
 const gateEnumMap = new Map([
     ["in", GateType.IN_TERM],
