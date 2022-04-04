@@ -32,6 +32,7 @@ const solution = new Map();
 const state = {
     gateAdditionRequest: null,
     selected: null,
+    connectionPending: null,
 };
 const drawSolution = ((grid) => (sol) => {
     ;
@@ -68,6 +69,9 @@ addEventListener("grid_click", (({ detail }) => {
         }
     }));
 }));
+const isValidConnection = (from, to) => {
+    return from.x < to.x;
+};
 const frame = (_) => {
     requestAnimationFrame(frame);
     gb.ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -104,6 +108,39 @@ export const deselectGate = () => {
     }
     state.selected = null;
     return true;
+};
+export const requestNewConnection = (idx) => {
+    let cleanUp;
+    const listener = (res) => (ev) => {
+        const toIndex = gateMap.get(ev.detail.coord);
+        if (typeof toIndex === "undefined") {
+            res(2 /* Cancelled */);
+            cleanUp();
+            return;
+        }
+        const fromGate = gt[idx];
+        if (!isValidConnection(fromGate.coord, ev.detail.coord)) {
+            res(3 /* Rejected */);
+            cleanUp();
+            return;
+        }
+        connTable.add(idx, toIndex);
+        res(0 /* Connected */);
+        cleanUp();
+        return;
+    };
+    return new Promise(res => {
+        const l = listener(res);
+        cleanUp = () => {
+            removeEventListener("grid_click", l);
+            state.connectionPending = null;
+        };
+        if (gt[idx] === undefined) {
+            res(3 /* Rejected */);
+            return;
+        }
+        addEventListener("grid_click", l);
+    });
 };
 export const requestGateAddition = (t) => {
     if (state.gateAdditionRequest !== null) {

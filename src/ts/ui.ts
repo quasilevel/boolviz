@@ -1,4 +1,4 @@
-import { requestGateAddition, GateClickEvent, selectGate, deselectGate } from "./boolviz.js"
+import { requestGateAddition, GateClickEvent, selectGate, deselectGate, requestNewConnection } from "./boolviz.js"
 import { GateType } from "./packages/gates.js"
 
 const $ = document
@@ -40,10 +40,18 @@ gatesButtons.forEach(it => {
   })
 })
 
-addEventListener("gate_click", (({ detail: data }: CustomEvent<GateClickEvent>) => {
+const selectionEv = async ({ detail: data }: CustomEvent<GateClickEvent>) => {
   if (!data) {
     deselectGate()
   }
 
   selectGate(data.index)
-}) as EventListener)
+  removeEventListener("gate_click", (selectionEv as unknown) as EventListener)
+
+  await requestNewConnection(data.index)
+  deselectGate()
+
+  addEventListener("gate_click", (selectionEv as unknown) as EventListener)
+}
+
+addEventListener("gate_click", (selectionEv as unknown) as EventListener)

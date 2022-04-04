@@ -48,11 +48,15 @@ type ProgramState = {
     cancel: () => void
   } | null
   selected: number | null
+  connectionPending: {
+    idx: number
+  } | null
 }
 
 const state: ProgramState = {
   gateAdditionRequest: null,
   selected: null,
+  connectionPending: null,
 }
 
 const drawSolution = ((grid: Grid) => (sol: Map<number, boolean>) => {
@@ -98,6 +102,10 @@ addEventListener("grid_click", (({ detail }: CustomEvent<GridClickEvent>) => {
   }))
 }) as EventListener)
 
+const isValidConnection = (from: Coord, to: Coord): boolean => {
+  return from.x < to.x
+}
+
 const frame = (_: number) => {
   requestAnimationFrame(frame)
   gb.ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -141,6 +149,47 @@ export const deselectGate = () => {
 
   state.selected = null
   return true
+}
+
+export const enum ConnectionResult {
+  Connected, Disconnected, Cancelled, Rejected
+}
+export const requestNewConnection = (idx: number): Promise<ConnectionResult> => {
+  let cleanUp: () => void
+  const listener = (res: any) => (ev: CustomEvent<GridClickEvent>) => {
+    const toIndex = gateMap.get(ev.detail.coord)
+    if (typeof toIndex === "undefined") {
+      res(ConnectionResult.Cancelled)
+      cleanUp()
+      return
+    }
+
+    const fromGate = gt[idx] as Gate
+    if (!isValidConnection(fromGate.coord, ev.detail.coord)) {
+      res(ConnectionResult.Rejected)
+      cleanUp()
+      return
+    }
+
+    connTable.add(idx, toIndex)
+    res(ConnectionResult.Connected)
+    cleanUp()
+    return
+  }
+
+  return new Promise(res => {
+    const l = listener(res) as EventListener
+    cleanUp = () => {
+      removeEventListener("grid_click", l)
+      state.connectionPending = null
+    }
+    if (gt[idx] === undefined) {
+      res(ConnectionResult.Rejected)
+      return
+    }
+
+    addEventListener("grid_click", l) 
+  })
 }
 
 export const enum AdditionResult {

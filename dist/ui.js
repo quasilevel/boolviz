@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { requestGateAddition, selectGate, deselectGate } from "./boolviz.js";
+import { requestGateAddition, selectGate, deselectGate, requestNewConnection } from "./boolviz.js";
 import { GateType } from "./packages/gates.js";
 const $ = document;
 const gateEnumMap = new Map([
@@ -44,9 +44,14 @@ gatesButtons.forEach(it => {
         el.dataset.state = GateButtonState.NORMAL;
     }));
 });
-addEventListener("gate_click", (({ detail: data }) => {
+const selectionEv = ({ detail: data }) => __awaiter(void 0, void 0, void 0, function* () {
     if (!data) {
         deselectGate();
     }
     selectGate(data.index);
-}));
+    removeEventListener("gate_click", selectionEv);
+    yield requestNewConnection(data.index);
+    deselectGate();
+    addEventListener("gate_click", selectionEv);
+});
+addEventListener("gate_click", selectionEv);
