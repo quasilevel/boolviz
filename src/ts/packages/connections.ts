@@ -18,6 +18,10 @@ export class Connections {
     this.c.get(from)?.delete(to)
   }
 
+  has(from: number, to: number): boolean {
+    return this.c.has(from) && (this.c.get(from) as Set<number>).has(to)
+  }
+
   deleteAll(from: number) {
     this.c.delete(from)
     this.c.forEach(tos => tos.delete(from))

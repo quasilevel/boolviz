@@ -15,6 +15,9 @@ export class Connections {
         var _a;
         (_a = this.c.get(from)) === null || _a === void 0 ? void 0 : _a.delete(to);
     }
+    has(from, to) {
+        return this.c.has(from) && this.c.get(from).has(to);
+    }
     deleteAll(from) {
         this.c.delete(from);
         this.c.forEach(tos => tos.delete(from));
