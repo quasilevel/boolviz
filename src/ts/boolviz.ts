@@ -281,14 +281,16 @@ export const requestCircuitEval = async () => {
   const inputs = filterGate(gt, GateType.IN_TERM)
   const outputs = filterGate(gt, GateType.OUT_TERM)
 
-  solution.clear()
-
   inputs.map(it => solution.set(it, false))
   
   const [solveFor, updateFor] = circuitSolver(gt, connTable)(solution)
   outputs.map(solveFor)
 
-  return updateFor
+  return (idx: number) => updateFor(idx, !solution.get(idx))
+}
+
+export const endCircuitEval = async () => {
+  solution.clear()
 }
 
 // test data
@@ -316,6 +318,7 @@ export const requestCircuitEval = async () => {
   ].map(([f, t]) => connTable.add(f, t))
 
   solution.set(0, false).set(1, true)
+  console.log(listInvalidGates(gt, connTable))
 
   const [solveFor, _] = circuitSolver(gt, connTable)(solution)
   ;[5, 6].map(solveFor)

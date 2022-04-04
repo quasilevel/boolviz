@@ -1,4 +1,4 @@
-import { requestGateAddition, GateClickEvent, selectGate, deselectGate, requestNewConnection, validateCircuit, requestCircuitEval } from "./boolviz.js"
+import { requestGateAddition, GateClickEvent, selectGate, deselectGate, requestNewConnection, validateCircuit, requestCircuitEval, endCircuitEval } from "./boolviz.js"
 import { GateType } from "./packages/gates.js"
 
 const $ = document
@@ -16,6 +16,19 @@ const gateEnumMap = new Map([
 enum GateButtonState {
   SELECTED = "selected",
   NORMAL = "normal"
+}
+
+enum State {
+  Designing, Running,
+}
+
+interface Program {
+  state: State
+  flipper?: (idx: number) => void
+}
+
+const program: Program = {
+  state: State.Designing,
 }
 
 const gatesButtons = $.querySelectorAll(".gate-con")
@@ -55,14 +68,53 @@ const selectionEv = async ({ detail: data }: CustomEvent<GateClickEvent>) => {
   addEventListener("gate_click", (selectionEv as unknown) as EventListener)
 }
 
+const flippingEv = async ({ detail: data }: CustomEvent<GateClickEvent>) => {
+  if (data === null) return
+  if (data.gate.type !== GateType.IN_TERM) return
+
+  program.flipper?.(data.index)
+}
+
+const events: Map<State, unknown> = new Map([
+  [State.Designing, selectionEv],
+  [State.Running, flippingEv],
+])
+
+const switchEventHandlers = (from: State, to: State) => {
+  removeEventListener("gate_click", events.get(from) as EventListener)
+  addEventListener("gate_click", events.get(to) as EventListener)
+}
+
 addEventListener("gate_click", (selectionEv as unknown) as EventListener)
 
-document.querySelector("button#run")?.addEventListener("click", async () => {
-  const invalid = await validateCircuit()
-  if (invalid.size !== 0) {
-    console.error(invalid)
-    return
+const runButton = document.querySelector("button#run") as HTMLButtonElement
+
+const buttonIcons = new Map([
+  [State.Running, "/src/svg/End.svg"],
+  [State.Designing, "/src/svg/Run.svg"]
+])
+
+const switchButtonState = ((b: HTMLButtonElement) => {
+  const img = b.querySelector("img") as HTMLImageElement
+  return (s: State) => {
+    img.src = buttonIcons.get(s) as string
+  }
+})(runButton)
+
+runButton.addEventListener("click", async () => {
+  if (program.state === State.Designing) {
+    const invalid = await validateCircuit()
+    if (invalid.size !== 0) {
+      console.error(invalid)
+      return
+    }
+    program.flipper = await requestCircuitEval()
+  } else if (program.state === State.Running) {
+    await endCircuitEval()
   }
 
-  await requestCircuitEval()
+  const newState = program.state === State.Running ? State.Designing : State.Running
+  switchButtonState(newState)
+  switchEventHandlers(program.state, newState)
+  program.state = newState
 })

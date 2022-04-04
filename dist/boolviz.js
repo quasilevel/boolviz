@@ -220,11 +220,13 @@ export const validateCircuit = () => __awaiter(void 0, void 0, void 0, function*
 export const requestCircuitEval = () => __awaiter(void 0, void 0, void 0, function* () {
     const inputs = filterGate(gt, GateType.IN_TERM);
     const outputs = filterGate(gt, GateType.OUT_TERM);
-    solution.clear();
     inputs.map(it => solution.set(it, false));
     const [solveFor, updateFor] = circuitSolver(gt, connTable)(solution);
     outputs.map(solveFor);
-    return updateFor;
+    return (idx) => updateFor(idx, !solution.get(idx));
+});
+export const endCircuitEval = () => __awaiter(void 0, void 0, void 0, function* () {
+    solution.clear();
 });
 // test data
 (() => {
@@ -250,6 +252,7 @@ export const requestCircuitEval = () => __awaiter(void 0, void 0, void 0, functi
         [4, 6],
     ].map(([f, t]) => connTable.add(f, t));
     solution.set(0, false).set(1, true);
+    console.log(listInvalidGates(gt, connTable));
     const [solveFor, _] = circuitSolver(gt, connTable)(solution);
     [5, 6].map(solveFor);
 });
