@@ -27,10 +27,14 @@ const drawGateTable = ((g) => (table) => (table.forEach(it => g.drawAt(it.coord,
 const drawConnections = dc(gb)(gt);
 const connTable = new Connections();
 const solution = new Map();
+const state = {
+    gateAdditionRequest: null,
+    selected: null,
+};
 const drawSolution = ((grid) => (sol) => {
     ;
     [...sol]
-        .filter(([_, val]) => val)
+        .filter(([idx, val]) => val && (idx !== state.selected))
         .map(([idx, _]) => (gt[idx].coord))
         .map(c => grid.drawAt(c, (ctx, { x, y }) => {
         ctx.beginPath();
@@ -41,9 +45,27 @@ const drawSolution = ((grid) => (sol) => {
         ctx.closePath();
     }));
 })(gb);
-const state = {
-    gateAdditionRequest: null
+const drawSelected = (ctx, { x, y }) => {
+    ctx.beginPath();
+    ctx.strokeStyle = "pink";
+    ctx.lineWidth = 2;
+    ctx.arc(x, y, 35, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.closePath();
 };
+addEventListener("grid_click", (({ detail }) => {
+    const gateIndex = gateMap.get(detail.coord);
+    if (typeof gateIndex === "undefined") {
+        dispatchEvent(new CustomEvent("gate_click"));
+        return;
+    }
+    dispatchEvent(new CustomEvent("gate_click", {
+        detail: {
+            index: gateIndex,
+            gate: gt[gateIndex],
+        }
+    }));
+}));
 const frame = (_) => {
     requestAnimationFrame(frame);
     gb.ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -58,11 +80,29 @@ const frame = (_) => {
             ctx.restore();
         });
     }
+    if (state.selected !== null) {
+        const g = gt[state.selected];
+        gb.drawAt(g.coord, drawSelected);
+    }
     drawGateTable(gt);
     drawConnections(connTable);
     drawSolution(solution);
 };
 requestAnimationFrame(frame);
+export const selectGate = (idx) => {
+    if (typeof gt[idx] === "undefined") {
+        return false;
+    }
+    state.selected = idx;
+    return true;
+};
+export const deselectGate = () => {
+    if (state.selected === null) {
+        return false;
+    }
+    state.selected = null;
+    return true;
+};
 export const requestGateAddition = (t) => {
     if (state.gateAdditionRequest !== null) {
         state.gateAdditionRequest.cancel();
