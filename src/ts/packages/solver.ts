@@ -2,7 +2,7 @@ import { GateArgCount, GateSolver, GateTable } from "./gates.js"
 import { Connections } from "./connections.js"
 
 export const listInvalidGates = (gt: GateTable, conns: Connections): Map<number, [number, number]> => {
-  const invt = conns.table()
+  const invt = conns.invert().table()
   const bad = [...invt.entries()]
   .map(([to, froms]): [number, [number, number]] => [to, [froms.size, GateArgCount.get(gt[to].type) as number]])
   .filter(([_, [actual, expexted]]) => actual !== expexted)

@@ -1,6 +1,6 @@
 import { GateArgCount, GateSolver } from "./gates.js";
 export const listInvalidGates = (gt, conns) => {
-    const invt = conns.table();
+    const invt = conns.invert().table();
     const bad = [...invt.entries()]
         .map(([to, froms]) => [to, [froms.size, GateArgCount.get(gt[to].type)]])
         .filter(([_, [actual, expexted]]) => actual !== expexted);
