@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { requestGateAddition, selectGate, deselectGate, requestNewConnection, validateCircuit, requestCircuitEval, endCircuitEval } from "./boolviz.js";
+import { requestGateAddition, selectGate, deselectGate, requestNewConnection, validateCircuit, requestCircuitEval, endCircuitEval, deleteGate } from "./boolviz.js";
 import { GateType } from "./packages/gates.js";
 setTimeout(() => {
     document.body.classList.remove("hide-el");
@@ -55,15 +55,40 @@ gatesButtons.forEach(it => {
         el.dataset.state = GateButtonState.NORMAL;
     }));
 });
-const selectionEv = ({ detail: data }) => __awaiter(void 0, void 0, void 0, function* () {
-    if (data === null) {
-        deselectGate();
+const deleteButton = document.querySelector("#delete-widget");
+deleteButton === null || deleteButton === void 0 ? void 0 : deleteButton.addEventListener("click", () => __awaiter(void 0, void 0, void 0, function* () {
+    if (typeof program.selected === "undefined") {
         return;
     }
+    console.log(program.selected);
+    const res = yield deleteGate(program.selected);
+    deselect();
+    console.log(res);
+}));
+const moveUnder = (c) => {
+    deleteButton.style.left = `${c.x}px`;
+    deleteButton.style.top = `${c.y + 40}px`;
+};
+const select = (data) => {
     selectGate(data.index);
+    program.selected = data.index;
+    moveUnder(data.absCoord);
+    deleteButton.dataset.state = "active";
+};
+const deselect = () => {
+    deselectGate();
+    program.selected = undefined;
+    deleteButton.dataset.state = "inactive";
+};
+const selectionEv = ({ detail: data }) => __awaiter(void 0, void 0, void 0, function* () {
+    if (data === null) {
+        deselect();
+        return;
+    }
+    select(data);
     removeEventListener("gate_click", selectionEv);
     yield requestNewConnection(data.index);
-    deselectGate();
+    deselect();
     addEventListener("gate_click", selectionEv);
 });
 const flippingEv = ({ detail: data }) => __awaiter(void 0, void 0, void 0, function* () {

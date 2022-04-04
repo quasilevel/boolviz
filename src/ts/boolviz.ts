@@ -87,6 +87,7 @@ const drawSelected: Drawer = (ctx, {x, y}) => {
 export interface GateClickEvent {
   index: number
   gate: Gate
+  absCoord: Coord
 }
 
 addEventListener("grid_click", (({ detail }: CustomEvent<GridClickEvent>) => {
@@ -100,6 +101,7 @@ addEventListener("grid_click", (({ detail }: CustomEvent<GridClickEvent>) => {
     detail: {
       index: gateIndex as number,
       gate: gt.get(gateIndex) as Gate,
+      absCoord: gb.absBoxCoord((gt.get(gateIndex) as Gate).coord)
     }
   }))
 }) as EventListener)
@@ -292,6 +294,16 @@ export const requestCircuitEval = async () => {
 
 export const endCircuitEval = async () => {
   solution.clear()
+}
+
+export const deleteGate = async (idx: number): Promise<boolean> => {
+  if (!gt.has(idx)) return false
+
+  gateMap.remove((gt.get(idx) as Gate).coord)
+  gt.delete(idx)
+  connTable.deleteAll(idx)
+
+  return true
 }
 
 // test data

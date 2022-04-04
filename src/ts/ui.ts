@@ -1,4 +1,5 @@
-import { requestGateAddition, GateClickEvent, selectGate, deselectGate, requestNewConnection, validateCircuit, requestCircuitEval, endCircuitEval } from "./boolviz.js"
+import { requestGateAddition, GateClickEvent, selectGate, deselectGate, requestNewConnection, validateCircuit, requestCircuitEval, endCircuitEval, deleteGate } from "./boolviz.js"
+import Coord from "./packages/coord.js"
 import { GateType } from "./packages/gates.js"
 
 setTimeout(() => {
@@ -29,6 +30,7 @@ enum State {
 interface Program {
   state: State
   flipper?: (idx: number) => void
+  selected?: number
 }
 
 const program: Program = {
@@ -57,17 +59,50 @@ gatesButtons.forEach(it => {
   })
 })
 
-const selectionEv = async ({ detail: data }: CustomEvent<GateClickEvent>) => {
-  if (data === null) {
-    deselectGate()
+const deleteButton = document.querySelector("#delete-widget") as HTMLButtonElement
+deleteButton?.addEventListener("click", async () => {
+  if (typeof program.selected === "undefined") {
     return
   }
 
+  console.log(program.selected)
+
+  const res = await deleteGate(program.selected)
+  deselect()
+  console.log(res)
+})
+
+const moveUnder = (c: Coord) => {
+  deleteButton.style.left = `${c.x}px`
+  deleteButton.style.top = `${c.y + 40}px`
+}
+
+const select = (data: GateClickEvent) => {
   selectGate(data.index)
+  program.selected = data.index
+
+  moveUnder(data.absCoord)
+  deleteButton.dataset.state = "active"
+}
+
+const deselect = () => {
+  deselectGate()
+  program.selected = undefined
+
+  deleteButton.dataset.state = "inactive"
+}
+
+const selectionEv = async ({ detail: data }: CustomEvent<GateClickEvent>) => {
+  if (data === null) {
+    deselect()
+    return
+  }
+
+  select(data)
   removeEventListener("gate_click", (selectionEv as unknown) as EventListener)
 
   await requestNewConnection(data.index)
-  deselectGate()
+  deselect()
 
   addEventListener("gate_click", (selectionEv as unknown) as EventListener)
 }

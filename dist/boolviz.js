@@ -77,6 +77,7 @@ addEventListener("grid_click", (({ detail }) => {
         detail: {
             index: gateIndex,
             gate: gt.get(gateIndex),
+            absCoord: gb.absBoxCoord(gt.get(gateIndex).coord)
         }
     }));
 }));
@@ -228,6 +229,14 @@ export const requestCircuitEval = () => __awaiter(void 0, void 0, void 0, functi
 });
 export const endCircuitEval = () => __awaiter(void 0, void 0, void 0, function* () {
     solution.clear();
+});
+export const deleteGate = (idx) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!gt.has(idx))
+        return false;
+    gateMap.remove(gt.get(idx).coord);
+    gt.delete(idx);
+    connTable.deleteAll(idx);
+    return true;
 });
 // test data
 (() => {

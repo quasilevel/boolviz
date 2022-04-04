@@ -100,3 +100,23 @@ body.hide-el #command-pallete, body.hide-el #gates-pallete {
   left: 50%;
   transform: translateX(-50%);
 }
+
+#delete-widget {
+  background: pink;
+  position: fixed;
+  --size: 16px;
+  border-radius: 100%;
+  width: var(--size);
+  height: var(--size);
+  transform: translateX(-50%);
+
+  transition: opacity 0.1s ease-in 0s;
+}
+
+#delete-widget[data-state="active"] {
+  opacity: 1.0;
+}
+
+#delete-widget[data-state="inactive"] {
+  opacity: 0.0;
+}
