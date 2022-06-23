@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial</title>
+    <link rel="stylesheet" href="frontendcss.css">
+</head>
+<body>
+    <!-- <h2 class="div1">TUTORIAL</h2> -->
+    <img src="Logo.svg" alt="boolviz" class="logo">
+    <h3 class="mainhead">Logical Gates</h3>
+    <h5 class="subhead">1. AND Gate :</h5>
+    <p class="para1">An AND gate is a logic gate having two or more inputs and a single output. An AND gate operates on
+        logical
+        multiplication rules. In this gate, if either of the inputs is low (0), then the output is also low. If all of
+        the inputs are high (1), then the output will also be high. An AND gate can have any number of inputs, although
+        2 input and 3 input AND gates are the most common. <br> There are two binary digits 0 and 1. We just told that
+        an AND gate performs a binary multiplication of binary digits. In multiplying 0 with 0 we will get 0, 1 with 0
+        or 0 with 1 we will get 0. Only we get 1 when 1 is multiplied by 1.
+        In other words, an AND gate is a digital device that produces high output only when all inputs are high and
+        produces low output under all other inputs conditions. A high digital signal means logically 1 and a low digital
+        signal means logically 0.</p>
+        <!-- div block for truth table of AND gate  -->
+    <div class="div1">
+        <table id="table">
+            <caption style="font-size: 20px;">Truth Table</caption>
+            <tr>
+                <th> A</th>  <th>B</th>  <th>A AND B</th>
+            </tr>
+            <tr>
+                <td>0</td> <td>0</td> <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>  <td>1</td>  <td>1</td>
+            </tr>
+            <tr>
+                <td>0</td>  <td>1</td>  <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>  <td>0</td>  <td>0</td>
+            </tr>
+        </table>
+    </div>
+    <h5 class="subhead">2. OR Gate :</h5>
+    <p class="para1">An OR gate is a digital circuit that has two or more inputs and produces an output, which is the logical OR of all those inputs. This logical OR is represented with the symbol ‘+’. <br> The following table shows the truth table of 2-input OR gate.</p>
+    <!-- div block for truth table of or gate  -->
+    <div class="div1">
+        <table id="table">
+            <caption style="font-size: 20px;">Truth Table</caption>
+            <tr>
+                <th> A </th>  <th> B</th>   <th> A OR B</th>
+            </tr>
+            <tr>
+                <td>0</td>  <td>0</td>  <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>  <td>1</td>  <td>1</td>
+            </tr>
+            <tr>
+                <td>0</td>  <td>1</td>  <td>1</td>
+            </tr>
+            <tr>
+                <td>1</td>  <td>0</td>  <td>1</td>
+            </tr>
+        </table>
+    </div>
+    <p class="para1">Here A, B are the inputs and Y is the output of two input OR gate. If both inputs are ‘0’, then only the output, Y is ‘0’. For remaining combinations of inputs, the output, Y is ‘1’.</p>
+    <h5 class="subhead">3. NOT Gate :</h5>
+    <p class="para1">A NOT gate is a digital circuit that has single input and single output. The output of NOT gate is the logical inversion of input. Hence, the NOT gate is also called as inverter. <br> The following table shows the truth table of NOT gate.</p>
+    <!-- div block for NOT Gate truth table  -->
+    <div class="div1">
+        <table id="table">
+            <caption style="font-size: 20px;">Truth Table</caption>
+            <tr>
+                <th>  A</th> <th> A'</th>
+            </tr>
+            <tr>
+                <td>0</td>  <td>1</td>
+            </tr>
+            <tr>
+                <td>1</td>  <td>0</td>
+            </tr>
+        </table>
+    </div>
+    <h5 class="subhead">4. NAND Gate</h5>
+    <p class="para1">NAND gate is a digital circuit that has two or more inputs and produces an output, which is the inversion of logical AND of all those inputs. <br> The following table shows the truth table of 2-input NAND gate.</p>
+    <!-- div block for truth table of NAND gate  -->
+    <div class="div1">
+        <table id="table">
+            <caption style="font-size: 20px;">Truth Table</caption>
+            <tr>
+                <th> A</th>  <th> B</th>  <th> (A.B)’</th>
+            </tr>
+            <tr>
+                <td>0</td>  <td>0</td>  <td>0</td>
+             </tr>
+            <tr>
+                <td>1</td>  <td>1</td>  <td>1</td>
+            </tr>
+            <tr>
+                <td>0</td>  <td>1</td>  <td>1</td>
+            </tr>
+            <tr>
+                <td>1</td>  <td>0</td>  <td>1</td>
+            </tr>
+        </table>
+    </div>
+    <p class="para1">Here A, B are the inputs and Y is the output of two input NAND gate. When both inputs are ‘1’, the output, Y is ‘0’. If at least one of the input is zero, then the output, Y is ‘1’. This is just opposite to that of two input AND gate operation.</p>
+    <h5 class="subhead">5. NOR Gate</h5>
+    <p class="para1">NOR gate is a digital circuit that has two or more inputs and produces an output, which is the inversion of logical OR of all those inputs.
+
+      <br>  The following table shows the truth table of 2-input NOR gate</p>
+      <!-- div block for truth table of NOR gate  -->
+    <div class="div1">
+        <table id="table">
+            <caption style="font-size: 20px;">Truth Table</caption>
+            <tr>
+                <th> A</th> <th> B</th> <th> (A+B)’</th>
+            </tr>
+            <tr>
+                <td>0</td>  <td>0</td>  <td>1</td>
+            </tr>
+            <tr>
+                <td>1</td>  <td>1</td>  <td>0</td>
+            </tr>
+            <tr>
+                <td>0</td>  <td>1</td>  <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>  <td>0</td>  <td>0</td>
+            </tr>
+        </table>
+    </div>
+    <P class="para1">Here A, B are the inputs and Y is the output. If both inputs are ‘0’, then the output, Y is ‘1’. If at least one of the input is ‘1’, then the output, Y is ‘0’. This is just opposite to that of two input OR gate operation.</P>
+    <h5 class="subhead">6. X-OR Gate</h5>
+    <p class="para1">The full form of Ex-OR gate is Exclusive-OR gate. Its function is same as that of OR gate except for some cases, when the inputs having even number of ones.
+    <br> The following table shows the truth table of 2-input Ex-OR gate.</p>
+    <!-- div block for truth table of X-OR gate  -->
+    <div class="div1">
+        <table id="table">
+            <caption style="font-size: 20px;">Truth Table</caption>
+            <tr>
+                <th> A</th>  <th></th>B</th>  <th> A XOR B</th>
+            </tr>
+            <tr>
+                <td>0</td>  <td>0</td>  <td>0</td>
+            </tr>
+            <tr>
+                <td>1</td>  <td>1</td>  <td>0</td>
+            </tr>
+            <tr>
+                <td>0</td>  <td>1</td>  <td>1</td>
+            </tr>
+            <tr>
+                <td>1</td>  <td>0</td>  <td>1</td>
+            </tr>
+        </table>
+    </div>
+    <p class="para1">Here A, B are the inputs and Y is the output of two input Ex-OR gate.The only modification is the output Y is zero instead of one, when both the inputs are one, since the inputs having even number of ones. Therefore, the output of Ex-OR gate is ‘1’, when only one of the two inputs is ‘1’. And it is zero, when both inputs are same.</p>
+</body>
+
+</html>
