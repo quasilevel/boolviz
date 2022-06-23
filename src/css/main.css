@@ -101,6 +101,28 @@ body.hide-el #command-pallete, body.hide-el #gates-pallete {
   transform: translateX(-50%);
 }
 
+#tutorial {
+	color: var(--theme-bg);
+	--margin-size: calc(2em + 59px/2);
+
+	background: pink;
+	text-decoration: none;
+	cursor: pointer;
+	padding: 0.3em 0.6em;
+	display: inline-block;
+	border-radius: 2em;
+	position: fixed;
+	right: var(--margin-size);
+	top: var(--margin-size);
+	transform: translateY(-50%);
+  opacity: 1.0;
+  transition: all 0.2s ease-in 0s;
+}
+
+.hide-el #tutorial {
+  opacity: 0.0;
+}
+
 #delete-widget {
   background: pink;
   position: fixed;
