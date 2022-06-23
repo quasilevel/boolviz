@@ -1,0 +1,139 @@
+body {
+    background-color: #561e43;
+    font-family: 'Fira Code', monospace;
+}
+
+/*h2 {
+    border: 2px solid white;
+    border-radius: 25px;
+    text-align: center;
+    margin: 25px;
+    padding: 25px;
+    text-shadow: 2px 2px 5px black;
+    font-size: 40px;
+    color: pink;
+}*/
+
+/*css for main heading*/
+.mainhead{
+    font-size: 50px;
+    color: pink;
+    padding-left: 35%;
+    padding-right: 28%;
+    text-transform: capitalize;
+    line-height: 0.2%;
+    /* text-indent: 60px; */
+}
+
+/* css for paragraph content  */
+.para1 {
+    font-size: 20px;
+    /* margin: 20px; */
+    padding-left: 28%;
+    padding-right: 28%;
+    color: pink;
+    /* text-align: justify; */
+    text-indent: 60px;
+}
+
+table,
+th,
+td,
+tr {
+    border: 1px solid pink;
+    color: pink;
+    border-spacing: 5px;
+}
+
+th,
+td {
+    text-align: center;
+    font-size: 35px;
+    /* padding: 15px; */
+    border-radius: 5px;
+    height: 50px;
+    width: 150px;
+}
+
+.div1{
+    margin-left: 30%;
+    margin-bottom: 5%;
+}
+
+/* css for sub heading  */
+.subhead{
+    padding-left: 27%;
+    padding-right: 28%;
+    font-size: 35px;
+    color: pink;
+    text-indent: 15px;
+    /* line-height: 0.2%; */
+}
+
+/* css for logo */
+.logo{ 
+    width: 8%;
+    height: 8%;
+    padding-left: 45%;
+    background-attachment: fixed;
+     /* padding: 30px; */
+}  
+
+
+
+
+/* responsive part of tutorial web page */
+@media only screen and (max-device-width:980px){
+    .logo{ 
+        width: 60px;
+        height: 60px;
+        padding-left: 150px;
+        padding-top: 35px;
+        background-attachment: fixed;
+         /* padding: 30px; */
+    } 
+    .mainhead{
+        font-size: 30px;
+        color: pink;
+        padding-left: 80px;
+        /* margin-top: -23px; */
+        padding-right: 8px;
+        text-transform: capitalize;
+        /* line-height: 0.2%; */
+        /* text-indent: 60px; */
+    }
+    .subhead{
+        padding-left: 3px;
+        /* padding-right: 28%; */
+        font-size: 25px;
+        color: pink;
+        text-indent: 15px;
+        /* line-height: 0.2%; */
+    }
+    .para1 {
+        font-size: 20px;
+        /* margin: 20px; */
+        padding-left: 58px;
+        padding-right: 58px;
+        color: pink;
+        /* text-align: justify; */
+        text-indent: 60px;
+    }
+    .div1{
+        margin-left: 30px;
+        margin-right: 30px;
+        margin-bottom: 25px;
+        margin-top: 25px;
+    }
+    /* adjusting size of tables  */
+    th,
+    td {
+        text-align: center;
+        font-size: 20px;
+        padding: 0px;
+        border-radius: 5px;
+        height: 50px;
+        width: 150px;
+    }
+
+}
