@@ -87,15 +87,18 @@ td {
     .logo{ 
         width: 60px;
         height: 60px;
-        padding-left: 150px;
+        padding-left: 120px;
         padding-top: 35px;
         background-attachment: fixed;
          /* padding: 30px; */
     } 
+    /* .logo:hover{
+        border: 5px solid red;
+    } */
     .mainhead{
         font-size: 30px;
         color: pink;
-        padding-left: 80px;
+        padding-left: 48px;
         /* margin-top: -23px; */
         padding-right: 8px;
         text-transform: capitalize;
@@ -111,10 +114,10 @@ td {
         /* line-height: 0.2%; */
     }
     .para1 {
-        font-size: 20px;
+        font-size: 15px;
         /* margin: 20px; */
-        padding-left: 58px;
-        padding-right: 58px;
+        padding-left: 10px;
+        padding-right: 10px;
         color: pink;
         /* text-align: justify; */
         text-indent: 60px;
@@ -135,5 +138,8 @@ td {
         height: 50px;
         width: 150px;
     }
-
+   /* .content-gate.para1:hover{
+       background-color: #561e43;
+       color: black;
+   } */
 }
