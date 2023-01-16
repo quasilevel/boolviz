@@ -24,17 +24,17 @@ export function generateRandomCircuit({
   return treeToString(root)
 }
 
-interface Node {
+export interface Node {
   value: string;
   left: Node | null;
   right: Node | null;
 }
 
-function generateTree(depth: number, operatorCount: number): Node {
+export function generateTree(depth: number, operatorCount: number): Node {
   throw new Error("Not implemented yet");
 }
 
-function populateTree(
+export function populateTree(
   root: Node,
   operators: GenerateRandomCircuitArg["operators"],
   operands: GenerateRandomCircuitArg["operands"]
@@ -42,6 +42,6 @@ function populateTree(
   throw new Error("Not implemented yet")
 }
 
-function treeToString(root: Node): string {
+export function treeToString(root: Node): string {
   throw new Error("Not implemented yet")
 }
