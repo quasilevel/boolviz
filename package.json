@@ -12,5 +12,11 @@
   "bugs": {
     "url": "https://github.com/quasilevel/boolviz/issues"
   },
-  "homepage": "https://boolviz-pi-club.netlify.app"
+  "homepage": "https://boolviz-pi-club.netlify.app",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "typescript": "^4.9.5"
+  }
 }
