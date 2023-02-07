@@ -1,0 +1,16 @@
+{
+  "name": "boolviz",
+  "description": "A boolean circuit visualizer",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quasilevel/boolviz.git"
+  },
+  "author": "Tushar Saxena @keogami",
+  "bugs": {
+    "url": "https://github.com/quasilevel/boolviz/issues"
+  },
+  "homepage": "https://boolviz-pi-club.netlify.app"
+}
