@@ -182,16 +182,15 @@ body.hide-el #gates-pallete {
 }
 
 #tutorial {
-  color: var(--theme-bg);
+  color: var(--black-800);
 
-  background: var(--theme-fg);
   text-decoration: none;
   cursor: pointer;
-  padding: 0.3em 0.6em;
   display: inline-block;
-  border-radius: 2em;
   opacity: 1.0;
   transition: all 0.2s ease-in 0s;
+  padding: 4px 0px;
+  border-bottom: 1px dashed currentColor;
 }
 
 .hide-el #tutorial {
