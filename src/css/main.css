@@ -2,7 +2,30 @@
   --icon-size: 72px;
   --pallete-gap: 0.5em;
   --pallete-size: calc((var(--icon-size) * 2) + (var(--pallete-gap)));
-  --theme-bg: #561e43;
+}
+
+/* colors */
+:root {
+  --black-100: #E9EAEC;
+  --black-200: #DEDEE3;
+  --black-300: #C3C3C6;
+  --black-400: #A3A4A8;
+  --black-500: #797A81;
+  --black-600: #5C5C61;
+  --black-700: #31333A;
+  --black-800: #1C1D21;
+  --black-900: #0F0F11;
+
+  --white-primary: #FFFFFF;
+  --black-primary: #151617;
+
+  --red-100: #FC665C;
+
+  --green-100: #81F98D;
+  --green-600: #145722;
+
+  --theme-bg: var(--white-primary);
+  --theme-fg: var(--black-900);
 }
 
 body {
@@ -24,7 +47,7 @@ body.hide-el #gates-pallete {
   width: var(--pallete-size);
   left: 2em;
   border-radius: 6px;
-  border: 2px solid pink;
+  border: 2px solid var(--theme-fg);
   opacity: 1.0;
   transition: all 0.2s ease-in 0s;
 }
@@ -50,15 +73,18 @@ body.hide-el #gates-pallete {
 }
 
 #gates-pallete .gate-con:hover {
-  border-color: pink;
+  border-color: var(--theme-fg);
 }
 
 #gates-pallete .gate-con .icon {
   transition: all 0.1s ease-in-out 0s;
+  fill: transparent;
+  stroke: var(--theme-fg);
+  stroke-width: 2px;
 }
 
 #gates-pallete .gate-con[data-state="selected"] {
-  background: pink;
+  background: var(--theme-fg);
 }
 
 #gates-pallete .gate-con[data-state="selected"] .icon {
@@ -86,7 +112,7 @@ body.hide-el #gates-pallete {
 }
 
 #command-pallete button {
-  background: pink;
+  background: var(--theme-fg);
   border: none;
   outline: none;
   width: 60px;
@@ -100,8 +126,9 @@ body.hide-el #gates-pallete {
   top: 2em;
   left: 50%;
   transform: translateX(-50%);
-  stroke: white;
-  fill: white;
+  --color: var(--theme-fg);
+  stroke: var(--color);
+  fill: var(--color);
   width: 60px;
 }
 
@@ -109,7 +136,7 @@ body.hide-el #gates-pallete {
   color: var(--theme-bg);
   --margin-size: calc(2em + 59px/2);
 
-  background: pink;
+  background: var(--theme-fg);
   text-decoration: none;
   cursor: pointer;
   padding: 0.3em 0.6em;
@@ -128,7 +155,7 @@ body.hide-el #gates-pallete {
 }
 
 #delete-widget {
-  background: pink;
+  background: var(--theme-fg);
   position: fixed;
   --size: 16px;
   border-radius: 100%;
