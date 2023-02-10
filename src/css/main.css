@@ -75,7 +75,7 @@ body.hide-el #gates-pallete {
 #gates-pallete {
   background: var(--theme-bg);
   border-radius: 6px;
-  border: 2px solid var(--theme-fg);
+  border: 1px dashed var(--black-300);
   opacity: 1.0;
   transition: all 0.2s ease-in 0s;
 }
@@ -90,17 +90,32 @@ body.hide-el #gates-pallete {
   width: var(--icon-size);
   height: var(--icon-size);
   border-radius: 6px;
-  border: 2px solid transparent;
-  transition: all 0.1s ease-in-out 0s;
+  transition: all 0.05s ease-in-out 0s;
   cursor: pointer;
   box-sizing: border-box;
 
   display: grid;
   place-items: center;
+
+  background: transparent;
+}
+
+#gates-pallete:hover {
+  border-color: var(--black-900);
+}
+
+#separator {
+  width: 1px;
+  background: var(--black-300);
+  margin: 6px 4px;
 }
 
 #gates-pallete .gate-con:hover {
-  border-color: var(--theme-fg);
+  background: var(--black-100);
+}
+
+#gates-pallete .gate-con:hover .icon {
+  stroke: var(--black-900);
 }
 
 #gates-pallete svg {
@@ -113,7 +128,7 @@ body.hide-el #gates-pallete {
 #gates-pallete .gate-con .icon {
   transition: all 0.1s ease-in-out 0s;
   fill: transparent;
-  stroke: var(--theme-fg);
+  stroke: var(--black-700);
   stroke-width: 2px;
 }
 
@@ -122,7 +137,11 @@ body.hide-el #gates-pallete {
 }
 
 #gates-pallete .gate-con[data-state="selected"] .icon {
-  stroke: var(--theme-bg);
+  stroke: var(--white-primary);
+}
+
+#gates-pallete:has(.gate-con) {
+  border-color: blue;
 }
 
 #command-pallete {
