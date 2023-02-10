@@ -13,8 +13,8 @@ if (canvas === null) {
   throw new Error("Cannot find <canvas id='boolviz'></canvas>")
 }
 
-canvas.width = innerWidth
-canvas.height = innerHeight
+// canvas.width = innerWidth
+// canvas.height = innerHeight
 
 const mouse = new Mouse()
 mouse.attach(canvas)

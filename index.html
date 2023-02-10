@@ -33,55 +33,60 @@
       </div>
     </div>
   </header>
-  <div id="gates-pallete">
-    <div title="input terminal" data-type='in' class='gate-con'>
-      <svg width="60px" height="60px" viewbox="0 0 60 60">
-        <use class="icon" xlink:href="#in">
-      </svg>
-    </div>
-    <div title="output terminal" data-type='out' class='gate-con'>
-      <svg width="60px" height="60px" viewbox="0 0 60 60">
-        <use class="icon" xlink:href="#out">
-      </svg>
-    </div>
 
-    <div id="separator"></div>
+  <canvas id="boolviz"></canvas>
 
-    <div title="not gate" data-type='not' class='gate-con'>
-      <svg width="60px" height="60px" viewbox="0 0 60 60">
-        <use class="icon" xlink:href="#not">
-      </svg>
+  <section id="pallet-con">
+    <div id="gates-pallete">
+      <div title="input terminal" data-type='in' class='gate-con'>
+        <svg viewbox="0 0 60 60">
+          <use class="icon" xlink:href="#in">
+        </svg>
+      </div>
+      <div title="output terminal" data-type='out' class='gate-con'>
+        <svg viewbox="0 0 60 60">
+          <use class="icon" xlink:href="#out">
+        </svg>
+      </div>
+
+      <div id="separator"></div>
+
+      <div title="not gate" data-type='not' class='gate-con'>
+        <svg viewbox="0 0 60 60">
+          <use class="icon" xlink:href="#not">
+        </svg>
+      </div>
+      <div title="and gate" data-type='and' class='gate-con'>
+        <svg viewbox="0 0 60 60">
+          <use class="icon" xlink:href="#and">
+        </svg>
+      </div>
+      <div title="or gate" data-type='or' class='gate-con'>
+        <svg viewbox="0 0 60 60">
+          <use class="icon" xlink:href="#or">
+        </svg>
+      </div>
+      <div title="xor gate" data-type='xor' class='gate-con'>
+        <svg viewbox="0 0 60 60">
+          <use class="icon" xlink:href="#xor">
+        </svg>
+      </div>
+      <div title="nand gate" data-type='nand' class='gate-con'>
+        <svg viewbox="0 0 60 60">
+          <use class="icon" xlink:href="#nand">
+        </svg>
+      </div>
+      <div title="nor gate" data-type='nor' class='gate-con'>
+        <svg viewbox="0 0 60 60">
+          <use class="icon" xlink:href="#nor">
+        </svg>
+      </div>
     </div>
-    <div title="and gate" data-type='and' class='gate-con'>
-      <svg width="60px" height="60px" viewbox="0 0 60 60">
-        <use class="icon" xlink:href="#and">
-      </svg>
-    </div>
-    <div title="or gate" data-type='or' class='gate-con'>
-      <svg width="60px" height="60px" viewbox="0 0 60 60">
-        <use class="icon" xlink:href="#or">
-      </svg>
-    </div>
-    <div title="xor gate" data-type='xor' class='gate-con'>
-      <svg width="60px" height="60px" viewbox="0 0 60 60">
-        <use class="icon" xlink:href="#xor">
-      </svg>
-    </div>
-    <div title="nand gate" data-type='nand' class='gate-con'>
-      <svg width="60px" height="60px" viewbox="0 0 60 60">
-        <use class="icon" xlink:href="#nand">
-      </svg>
-    </div>
-    <div title="nor gate" data-type='nor' class='gate-con'>
-      <svg width="60px" height="60px" viewbox="0 0 60 60">
-        <use class="icon" xlink:href="#nor">
-      </svg>
-    </div>
-  </div>
+  </section>
+
   <div data-state="inactive" id="delete-widget">
     <img src="/src/svg/Delete.svg">
   </div>
-  <canvas id="boolviz"></canvas>
   <script type="module" src="/dist/ui.js"></script>
   <script type="module" src="/dist/boolviz.js"></script>
   <svg style="display: none" viewbox="0 0 60 60">

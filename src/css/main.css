@@ -1,7 +1,7 @@
 :root {
-  --icon-size: 72px;
+  --icon-size: 48px;
   --pallete-gap: 0.5em;
-  --pallete-size: calc((var(--icon-size) * 2) + (var(--pallete-gap)));
+  --main-padding: 16px;
 }
 
 /* colors */
@@ -30,8 +30,41 @@
 
 body {
   margin: 0px;
-  padding: 0px;
+  padding: var(--main-padding);
   background: var(--theme-bg);
+  height: calc(100vh - var(--main-padding) * 2);
+  display: grid;
+  grid-template-rows: 36px 1fr 64px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+}
+
+#logo-con {
+  display: flex;
+  align-items: baseline;
+}
+
+#logo-con * {
+  flex-shrink: 0;
+}
+
+#button-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+}
+
+#pallet-con {
+  display: flex;
+  margin: auto;
 }
 
 body.hide-el #command-pallete,
@@ -41,11 +74,6 @@ body.hide-el #gates-pallete {
 
 #gates-pallete {
   background: var(--theme-bg);
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  width: var(--pallete-size);
-  left: 2em;
   border-radius: 6px;
   border: 2px solid var(--theme-fg);
   opacity: 1.0;
@@ -56,24 +84,30 @@ body.hide-el #gates-pallete {
   display: flex;
   padding: var(--pallete-gap);
   gap: var(--pallete-gap);
-  flex-wrap: wrap;
-  justify-content: center;
-  align-content: start;
 }
 
 #gates-pallete .gate-con {
   width: var(--icon-size);
   height: var(--icon-size);
-  padding: 4px;
   border-radius: 6px;
   border: 2px solid transparent;
   transition: all 0.1s ease-in-out 0s;
   cursor: pointer;
   box-sizing: border-box;
+
+  display: grid;
+  place-items: center;
 }
 
 #gates-pallete .gate-con:hover {
   border-color: var(--theme-fg);
+}
+
+#gates-pallete svg {
+  --size: calc(var(--icon-size) * 0.75);
+  /* 3/4th of icon size */
+  width: var(--size);
+  height: var(--size);
 }
 
 #gates-pallete .gate-con .icon {
@@ -122,19 +156,14 @@ body.hide-el #gates-pallete {
 }
 
 #logo {
-  position: fixed;
-  top: 2em;
-  left: 50%;
-  transform: translateX(-50%);
   --color: var(--theme-fg);
   stroke: var(--color);
   fill: var(--color);
-  width: 60px;
+  height: 100%;
 }
 
 #tutorial {
   color: var(--theme-bg);
-  --margin-size: calc(2em + 59px/2);
 
   background: var(--theme-fg);
   text-decoration: none;
@@ -142,10 +171,6 @@ body.hide-el #gates-pallete {
   padding: 0.3em 0.6em;
   display: inline-block;
   border-radius: 2em;
-  position: fixed;
-  right: var(--margin-size);
-  top: var(--margin-size);
-  transform: translateY(-50%);
   opacity: 1.0;
   transition: all 0.2s ease-in 0s;
 }
