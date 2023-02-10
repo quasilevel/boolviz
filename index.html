@@ -6,10 +6,33 @@
 </head>
 
 <body class="hide-el">
-  <svg viewBox="0 0 61 40" preserveAspectRatio="none" id="logo">
-    <use xlink:href="#logo-icon">
-  </svg>
-  <a id="tutorial" href="./tutorial/">Tutorial</a>
+  <header>
+    <div id="logo-con">
+      <svg viewBox="0 0 61 40" preserveAspectRatio="none" id="logo">
+        <use xlink:href="#logo-icon">
+      </svg>
+      <span>
+        by PI Club
+      </span>
+    </div>
+
+    <div id="button-group">
+      <a id="tutorial" href="./tutorial/">Learn</a>
+
+      <button id="share">
+        Share
+      </button>
+
+      <div data-state="designing" id="runner">
+        <button>
+          |>
+        </button>
+        <span id="app-state">
+          Designing
+        </span>
+      </div>
+    </div>
+  </header>
   <div id="gates-pallete">
     <div title="input terminal" data-type='in' class='gate-con'>
       <svg width="60px" height="60px" viewbox="0 0 60 60">
@@ -21,6 +44,9 @@
         <use class="icon" xlink:href="#out">
       </svg>
     </div>
+
+    <div id="separator"></div>
+
     <div title="not gate" data-type='not' class='gate-con'>
       <svg width="60px" height="60px" viewbox="0 0 60 60">
         <use class="icon" xlink:href="#not">
@@ -54,11 +80,6 @@
   </div>
   <div data-state="inactive" id="delete-widget">
     <img src="/src/svg/Delete.svg">
-  </div>
-  <div id="command-pallete">
-    <button title="run" id="run">
-      <img src="/src/svg/Run.svg" alt="Run_Icon">
-    </button>
   </div>
   <canvas id="boolviz"></canvas>
   <script type="module" src="/dist/ui.js"></script>
