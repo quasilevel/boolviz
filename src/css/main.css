@@ -28,6 +28,18 @@
   --theme-fg: var(--black-900);
 }
 
+:root {
+  --font: "Fira Code", inter, monospace;
+}
+
+button {
+  font-family: var(--font);
+}
+
+button:disabled {
+  cursor: not-allowed !important;
+}
+
 body {
   margin: 0px;
   padding: var(--main-padding);
@@ -35,6 +47,7 @@ body {
   height: calc(100vh - var(--main-padding) * 2);
   display: grid;
   grid-template-rows: 36px 1fr 64px;
+  font-family: var(--font);
 }
 
 header {
@@ -53,8 +66,99 @@ header {
 
 #button-group {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 12px;
+}
+
+#runner {
+  height: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-sizing: border-box;
+  width: calc(132.35px + 0.9rem);
+  transition: all 0.08s ease-in;
+  background: var(--black-100);
+  color: var(--black-800);
+  --separator-color: var(--black-300);
+  --hover-color: var(--black-200);
+}
+
+#runner #running-icon {
+  display: none;
+}
+
+#runner #designing-icon {
+  display: block;
+}
+
+body[data-state="running"] #runner #running-icon {
+  display: block;
+}
+
+body[data-state="running"] #runner #designing-icon {
+  display: none;
+}
+
+#runner #running-state {
+  display: none;
+}
+
+#runner #designing-state {
+  display: block;
+}
+
+body[data-state="running"] #runner #running-state {
+  display: block;
+}
+
+body[data-state="running"] #runner #designing-state {
+  display: none;
+}
+
+body[data-state="invalid"] #runner {
+  box-shadow: inset var(--red-100) 0 0 16px -8px;
+}
+
+body[data-state="running"] #runner {
+  background: var(--black-800);
+  color: var(--black-200);
+  --separator-color: var(--black-700);
+  --hover-color: var(--black-700);
+}
+
+#runner button {
+  aspect-ratio: 1;
+  height: 100%;
+  font-size: 1rem;
+  appearance: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.08s ease-in;
+  position: relative;
+  background: transparent;
+  color: currentColor;
+}
+
+#runner button::after {
+  content: "";
+  position: absolute;
+  width: 1px;
+  height: calc(100% - 12px);
+  background: var(--separator-color);
+  right: 0px;
+  top: 6px;
+}
+
+body:not([data-state=invalid]) #runner button:hover {
+  background: var(--hover-color);
+  transition: background 0.08s ease-in;
+}
+
+body:not([data-state=invalid]) #runner button:hover::after {
+  background: transparent;
 }
 
 canvas {
