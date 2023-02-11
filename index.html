@@ -94,6 +94,31 @@
   <div data-state="inactive" id="delete-widget">
     <img src="/src/svg/Delete.svg">
   </div>
+
+  <div id="share-modal-overlay" class="overlay hidden">
+    <div id="share-modal">
+      <section id="controls">
+        <div id="tab-buttons">
+          <span id="share-button" class="tab-button" data-current="true">Share</span>
+        </div>
+        <div id="close-button">
+          <svg viewBox="0 0 16 16">
+            <use xlink:href="#cross-icon" />
+          </svg>
+        </div>
+      </section>
+      <section id="inputs">
+        <div id="url">
+          <input type="text" placeholder="Title for your circuit" />
+          <button>Share</button>
+        </div>
+        <div id="iframe">
+          <input type="text" />
+          <button>Copy</button>
+        </div>
+      </section>
+    </div>
+  </div>
   <script type="module" src="/dist/ui.js"></script>
   <script type="module" src="/dist/boolviz.js"></script>
   <svg style="display: none" viewbox="0 0 60 60">

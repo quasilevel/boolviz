@@ -2,6 +2,7 @@
   --icon-size: 48px;
   --pallete-gap: 0.5em;
   --main-padding: 16px;
+  --header-size: 36px;
 }
 
 /* colors */
@@ -26,6 +27,7 @@
 
   --theme-bg: var(--white-primary);
   --theme-fg: var(--black-900);
+  --overlay-bg: rgba(49, 51, 58, 0.25);
 }
 
 :root {
@@ -46,7 +48,7 @@ body {
   background: var(--theme-bg);
   height: calc(100vh - var(--main-padding) * 2);
   display: grid;
-  grid-template-rows: 36px 1fr 64px;
+  grid-template-rows: var(--header-size) 1fr 64px;
   font-family: var(--font);
 }
 
@@ -346,4 +348,197 @@ body.hide-el #gates-pallete {
 
 #delete-widget[data-state="inactive"] {
   opacity: 0.0;
+}
+
+.overlay {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 1.0;
+  transition: all 0.2s ease-in;
+  background: var(--overlay-bg);
+}
+
+.overlay.hidden {
+  opacity: 0.0;
+  pointer-events: none;
+}
+
+#share-modal-overlay {
+  display: grid;
+  place-items: start center;
+}
+
+#share-modal {
+  width: min(540px, 60vw);
+  gap: 2rem;
+  padding: 1rem;
+  padding-bottom: 2rem;
+  background: var(--white-primary);
+  border-radius: 6px;
+
+  margin-top: calc(var(--main-padding) + var(--header-size) + 64px);
+  display: flex;
+  flex-direction: column;
+}
+
+#share-modal #controls {
+  display: flex;
+  justify-content: space-between;
+}
+
+#share-modal #close-button {
+  aspect-ratio: 1;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  opacity: 0.0;
+  transition: all 0.08s ease-in;
+  background: transparent;
+  cursor: pointer;
+}
+
+#share-modal:hover #close-button {
+  opacity: 1.0;
+}
+
+#share-modal #close-button:hover {
+  background: var(--black-100);
+}
+
+#share-modal #close-button svg {
+  stroke: var(--black-800);
+  stroke-width: 3px;
+  height: 0.7rem;
+}
+
+#tab-buttons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.tab-button {
+  color: var(--black-400);
+  cursor: pointer;
+  transition: all 0.08s ease-in;
+}
+
+.tab-button[data-current="true"] {
+  color: var(--black-800);
+}
+
+.tab-button:not([data-current="true"]):hover {
+  color: var(--black-600);
+}
+
+#share-modal #inputs {
+  display: grid;
+  gap: 1rem;
+}
+
+#inputs>div {
+  border: 1px solid var(--black-300);
+  border-radius: 6px;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+#inputs>div input {
+  flex: 1;
+  appearance: none;
+  border: none;
+  font-family: var(--font);
+  font-size: 1rem;
+  min-height: 36px;
+  padding: 0.5rem;
+  margin: 0;
+  border-radius: 6px;
+  transition: all 0.08s ease-in;
+  color: var(--black-900);
+  outline: 1px dashed transparent;
+}
+
+#share-modal[data-state=shared] #inputs>div input {
+  background: var(--black-100);
+  color: var(--black-600);
+}
+
+#share-modal:not([data-state=shared]) #inputs>div input:not(:focus):hover {
+  outline-color: var(--black-400);
+}
+
+#share-modal:not([data-state=shared]) #inputs>div input:focus {
+  background: var(--black-100);
+}
+
+#inputs>div button {
+  appearance: none;
+  color: var(--black-800);
+  background: var(--black-100);
+  font-family: var(--font);
+  border: none;
+  border-radius: 6px;
+  padding: 0rem 1rem;
+  font-size: 1rem;
+  transition: all 0.08s ease-in;
+  cursor: pointer;
+}
+
+#inputs>div button:hover {
+  background: var(--black-200);
+}
+
+#share-modal:not([data-state=shared]) #iframe {
+  display: none;
+}
+
+#share-modal[data-state=sharing] #url button {
+  position: relative;
+  color: transparent;
+  cursor: not-allowed;
+}
+
+#share-modal[data-state=sharing] #url button:after {
+  content: "|>";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--black-600);
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  animation: loading-anim 1s step-start infinite forwards;
+}
+
+@keyframes loading-anim {
+  0% {
+    content: "\EE06";
+  }
+
+  20% {
+    content: "\EE07";
+  }
+
+  40% {
+    content: "\EE08";
+  }
+
+  60% {
+    content: "\EE09";
+  }
+
+  80% {
+    content: "\EE0A";
+  }
+
+  100% {
+    content: "\EE0B";
+  }
 }
