@@ -13,8 +13,13 @@ if (canvas === null) {
   throw new Error("Cannot find <canvas id='boolviz'></canvas>")
 }
 
-// canvas.width = innerWidth
-// canvas.height = innerHeight
+
+{ // set canvas dimensions based on css
+  const canvasDim = canvas.getBoundingClientRect()
+
+  canvas.width = canvasDim.width
+  canvas.height = canvasDim.height
+}
 
 const mouse = new Mouse()
 mouse.attach(canvas)
@@ -134,6 +139,7 @@ const canPreviewConnection = (fidx: number, tidx: number): boolean => {
 const frame = (_: number) => {
   requestAnimationFrame(frame)
   gb.ctx.clearRect(0, 0, canvas.width, canvas.height)
+  gb.drawGrid(gb.boxSize)
   gb.ctx.lineWidth = 2
   gb.ctx.strokeStyle = "pink"
   const { gateAdditionRequest: gar } = state
