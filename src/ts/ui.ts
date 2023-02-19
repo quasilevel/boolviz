@@ -169,11 +169,49 @@ runButton.addEventListener("click", async () => {
 const shareDOM = {
   overlay: definitely($.querySelector<HTMLDivElement>("#share-modal-overlay"), "share modal overlay is missing"),
   shareButton: definitely($.querySelector<HTMLButtonElement>("button#share"), "share button is missing"),
-  closeButton: definitely($.querySelector<HTMLButtonElement>("#share-modal #close-button"), "share modal's close button is missing")
+  closeButton: definitely($.querySelector<HTMLButtonElement>("#share-modal #close-button"), "share modal's close button is missing"),
+  modal: definitely($.querySelector<HTMLDivElement>("#share-modal"), "share modal is missing"),
+
+  inputs: {
+    url: {
+      button: definitely($.querySelector<HTMLButtonElement>("#share-modal #url button"), "Share modal's url button is missing"),
+      input: definitely($.querySelector<HTMLInputElement>("#share-modal #url input"), "Share modal's url input is missing"),
+    },
+    iframe: {
+      button: definitely($.querySelector<HTMLButtonElement>("#share-modal #iframe button"), "Share modal's url button is missing"),
+      input: definitely($.querySelector<HTMLInputElement>("#share-modal #iframe input"), "Share modal's url input is missing"),
+    },
+  }
 }
 
-shareDOM.shareButton.addEventListener("click", _ => shareMachine.trigger("Open", undefined))
-shareDOM.closeButton.addEventListener("click", _ => shareMachine.trigger("Close", undefined))
+function delay(ms: number) {
+  return new Promise<number>((res) => {
+    setTimeout(() => res(ms), ms)
+  })
+}
+
+const openShareModal = (_: MouseEvent): boolean => shareMachine.trigger("Open", undefined)
+const closeShareModal = (_: MouseEvent): boolean => shareMachine.trigger("Close", undefined)
+
+shareDOM.shareButton.addEventListener("click", openShareModal)
+shareDOM.closeButton.addEventListener("click", closeShareModal)
+
+shareDOM.inputs.url.button.addEventListener("click", _ => shareMachine.trigger("ShareStart", { title: shareDOM.inputs.url.input.value }))
 
 shareMachine.on("Closed", _ => shareDOM.overlay.classList.add("hidden")) 
-shareMachine.on("Opened", _ => shareDOM.overlay.classList.remove("hidden"))
+shareMachine.on("Opened", _ => {
+  shareDOM.overlay.classList.remove("hidden")
+  shareDOM.modal.dataset.state = "opened"
+})
+
+shareMachine.on("Sharing", async ({ title: _ }) => {
+  shareDOM.modal.dataset.state = "sharing"
+  await delay(2000)
+  shareMachine.trigger("ShareEnd", { url: new URL(window.location.toString()) , embed: new URL(window.location.toString()) })
+})
+
+shareMachine.on("Shared", ({ url, embed }) => {
+  shareDOM.modal.dataset.state = "shared"
+  shareDOM.inputs.url.input.value = url.toString()
+  shareDOM.inputs.iframe.input.value = `<iframe src="${embed.toString()}"></iframe>`
+})

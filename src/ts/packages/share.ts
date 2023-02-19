@@ -4,7 +4,7 @@ type ShareStates = {
 	Closed: void
 	Opened: void
 	Sharing: { title: string }
-	Shared: { url: URL }
+	Shared: { url: URL, embed: URL }
 }
 
 type ShareEvents = {
@@ -27,5 +27,8 @@ export const shareMachine = new Machine<ShareStates, ShareEvents>({
 		},
 		Sharing: {
 			ShareEnd: pass("Shared")
+		},
+		Shared: {
+			Close: pass("Closed")
 		}
 	})
