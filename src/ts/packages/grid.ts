@@ -87,19 +87,19 @@ export default class Grid {
     this.ctx.restore()
   }
 
-  drawGrid(size: number) {
+  drawGrid() {
     const { ctx } = this
     ctx.save()
     ctx.beginPath()
     ctx.strokeStyle = "black"
     ctx.setLineDash([5, 5])
-    this._drawGridX(size)
-    this._drawGridY(size)
+    this._drawGridX(this.boxSize)
+    this._drawGridY(this.boxSize)
     ctx.closePath()
     ctx.restore()
   }
 
-  _drawGridX(size: number) {
+  private _drawGridX(size: number) {
     const { ctx } = this
     const xlen = ctx.canvas.width
     const y = ctx.canvas.height
@@ -113,7 +113,7 @@ export default class Grid {
     }
   }
 
-  _drawGridY(size: number) {
+  private _drawGridY(size: number) {
     const { ctx } = this
     const ylen = ctx.canvas.height
     const x = ctx.canvas.width
