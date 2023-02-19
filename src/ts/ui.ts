@@ -1,12 +1,20 @@
 import { requestGateAddition, GateClickEvent, selectGate, deselectGate, requestNewConnection, validateCircuit, requestCircuitEval, endCircuitEval, deleteGate } from "./boolviz.js"
 import Coord from "./packages/coord.js"
 import { GateType } from "./packages/gates.js"
+import { shareMachine } from "./packages/share.js"
 
 setTimeout(() => {
   document.body.classList.remove("hide-el")
 }, 1200)
 
 const $ = document
+const definitely = <T>(el: T | null, error: string): T => {
+  if (el === null) {
+    throw new Error(error)
+  }
+  return el
+}
+
 const gateEnumMap = new Map([
   ["in", GateType.IN_TERM],
   ["out", GateType.OUT_TERM],
@@ -125,7 +133,7 @@ const switchEventHandlers = (from: State, to: State) => {
 
 addEventListener("gate_click", (selectionEv as unknown) as EventListener)
 
-const runButton = document.querySelector("button#run") as HTMLButtonElement
+const runButton = definitely($.querySelector<HTMLButtonElement>("#runner button"), "runer button is missing")
 
 const buttonIcons = new Map([
   [State.Running, "/src/svg/End.svg"],
@@ -156,3 +164,16 @@ runButton.addEventListener("click", async () => {
   switchEventHandlers(program.state, newState)
   program.state = newState
 })
+
+// Share
+const shareDOM = {
+  overlay: definitely($.querySelector<HTMLDivElement>("#share-modal-overlay"), "share modal overlay is missing"),
+  shareButton: definitely($.querySelector<HTMLButtonElement>("button#share"), "share button is missing"),
+  closeButton: definitely($.querySelector<HTMLButtonElement>("#share-modal #close-button"), "share modal's close button is missing")
+}
+
+shareDOM.shareButton.addEventListener("click", _ => shareMachine.trigger("Open", undefined))
+shareDOM.closeButton.addEventListener("click", _ => shareMachine.trigger("Close", undefined))
+
+shareMachine.on("Closed", _ => shareDOM.overlay.classList.add("hidden")) 
+shareMachine.on("Opened", _ => shareDOM.overlay.classList.remove("hidden"))
