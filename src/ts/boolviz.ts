@@ -5,6 +5,7 @@ import Mouse from './packages/mouse.js'
 import SpatialMap from './packages/spatialmap.js'
 import Coord from './packages/coord.js'
 import { circuitSolver, listInvalidGates } from './packages/solver.js'
+import { Circuit } from './packages/circuit.js'
 const $ = document
 
 const canvas = $.querySelector('canvas#boolviz') as HTMLCanvasElement
@@ -30,7 +31,15 @@ const gb = new Grid({
   boxSize: 100,
 })
 
-const gt: GateTable = new Map()
+const circuit = Circuit.Default()
+export const getShareState = () => {
+  return {
+    ...circuit.asPlain(),
+    transform: gb.getTransform()
+  }
+}
+
+const gt = circuit.gates
 let currentId = 0
 
 const gateMap = new SpatialMap<number>()
@@ -46,7 +55,7 @@ const drawGateTable = ((g: Grid) => (table: GateTable) => (
 
 const drawConnections = dcs(gb)(gt)
 
-const connTable = new Connections()
+const connTable = circuit.connections
 const solution = new Map()
 
 type ProgramState = {
@@ -139,7 +148,7 @@ const canPreviewConnection = (fidx: number, tidx: number): boolean => {
 const frame = (_: number) => {
   requestAnimationFrame(frame)
   gb.ctx.clearRect(0, 0, canvas.width, canvas.height)
-  gb.drawGrid(gb.boxSize)
+  gb.drawGrid()
   gb.ctx.lineWidth = 2
   gb.ctx.strokeStyle = "pink"
   const { gateAdditionRequest: gar } = state

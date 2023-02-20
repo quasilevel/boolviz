@@ -1,4 +1,4 @@
-import { requestGateAddition, GateClickEvent, selectGate, deselectGate, requestNewConnection, validateCircuit, requestCircuitEval, endCircuitEval, deleteGate } from "./boolviz.js"
+import { requestGateAddition, GateClickEvent, selectGate, deselectGate, requestNewConnection, validateCircuit, requestCircuitEval, endCircuitEval, deleteGate, getShareState } from "./boolviz.js"
 import Coord from "./packages/coord.js"
 import { GateType } from "./packages/gates.js"
 import { shareMachine } from "./packages/share.js"
@@ -202,7 +202,13 @@ const closeShareModal = (_: MouseEvent): boolean => shareMachine.trigger("Close"
 shareDOM.shareButton.addEventListener("click", openShareModal)
 shareDOM.closeButton.addEventListener("click", closeShareModal)
 
-shareDOM.inputs.title.button.addEventListener("click", _ => shareMachine.trigger("ShareStart", { title: shareDOM.inputs.title.input.value }))
+shareDOM.inputs.title.button.addEventListener("click", _ => {
+  const circuit = getShareState()
+
+  console.log(circuit)
+
+  shareMachine.trigger("ShareStart", { title: shareDOM.inputs.title.input.value })
+})
 
 const copyOutput = (value: () => string) => async function (this: HTMLButtonElement, _ev: MouseEvent) {
   try {

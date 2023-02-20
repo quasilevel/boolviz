@@ -23,6 +23,8 @@ export type GridRect = {
 
 export type Drawer = (ctx: CanvasRenderingContext2D, coord: Coord) => void
 
+type Transform = [number, number, number, number, number, number]
+
 export default class Grid {
   ctx: CanvasRenderingContext2D
   boxSize: number
@@ -34,6 +36,11 @@ export default class Grid {
     this.boxSize = boxSize
 
     this._addClickListener()
+  }
+
+  getTransform(): Transform {
+    const mat = this.ctx.getTransform()
+    return [mat.a, mat.b, mat.c, mat.d, mat.e, mat.f]
   }
 
   _addClickListener() {

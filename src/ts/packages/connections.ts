@@ -4,8 +4,26 @@ import Grid from "./grid.js"
 
 const CONNECTION_JOIN_GAP = 15 // px
 
+type ConnectionArgs = [number, number[]][]
+
 export class Connections {
-  private c: Map<number, Set<number>> = new Map()
+  private c: Map<number, Set<number>>
+
+  constructor(args: ConnectionArgs) {
+    this.c = new Map(args.map(
+      ([idx, idxs]) => [idx, new Set(idxs)]
+    ))
+  }
+
+  static Default(): Connections {
+    return new Connections([])
+  }
+
+  asPlain(): ConnectionArgs {
+    return [...this.c].map(
+      ([idx, idxSet]) => [idx, [...idxSet]]
+    )
+  }
 
   add(from: number, to: number) {
     if (!this.c.has(from)) {
@@ -34,7 +52,7 @@ export class Connections {
   table(): Map<number, Set<number>> { return this.c }
 
   invert(): Connections {
-    const m = new Connections()
+    const m = Connections.Default()
     this.c.forEach((tos, from) => {
       tos.forEach(to => {
         m.add(to, from)
