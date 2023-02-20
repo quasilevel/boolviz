@@ -208,6 +208,7 @@ shareMachine.on("Closed", _ => shareDOM.overlay.classList.add("hidden"))
 shareMachine.on("Opened", _ => {
   shareDOM.overlay.classList.remove("hidden")
   shareDOM.modal.dataset.state = "opened"
+  shareDOM.inputs.url.input.value = ""
 })
 
 shareMachine.on("Sharing", async ({ title: _ }) => {
