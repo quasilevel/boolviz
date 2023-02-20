@@ -204,25 +204,23 @@ shareDOM.closeButton.addEventListener("click", closeShareModal)
 
 shareDOM.inputs.title.button.addEventListener("click", _ => shareMachine.trigger("ShareStart", { title: shareDOM.inputs.title.input.value }))
 
-const copyOutput = async function (this: HTMLButtonElement, _ev: MouseEvent) {
-  const value = this.parentElement?.querySelector(".output")?.innerHTML // FIXME make sure innerText exists in the element
-  if (typeof value === "undefined") {
-    console.error("Copy button's sibling output element is missing")
+const copyOutput = (value: () => string) => async function (this: HTMLButtonElement, _ev: MouseEvent) {
+  try {
+    await navigator.clipboard.writeText(value())
+  } catch (error) {
+    console.error(error)
     return
   }
 
-  await navigator.clipboard.writeText(value)
-
   const color = getComputedStyle(this).backgroundColor
-
   const duration = 200
+
   this.animate(
     { backgroundColor: "var(--green-100)" },
     { duration, fill: "forwards" }
   )
 
   this.innerText = "copied"
-
   setTimeout((el: HTMLButtonElement) => {
     el.animate(
       { backgroundColor: color },
@@ -232,8 +230,21 @@ const copyOutput = async function (this: HTMLButtonElement, _ev: MouseEvent) {
   }, 1500, this)
 }
 
-shareDOM.outputs.iframe.copy.addEventListener("click", copyOutput)
-shareDOM.outputs.url.copy.addEventListener("click", copyOutput)
+const buildShareIframe = (embed: URL) => `<iframe src="${embed.toString()}"></iframe>`
+
+shareDOM.outputs.iframe.copy.addEventListener("click", copyOutput(() => {
+  if (shareMachine.current.state !== "Shared") {
+    throw new Error("Invalid share state to copy")
+  }
+  return buildShareIframe(shareMachine.current.data.embed)
+}))
+
+shareDOM.outputs.url.copy.addEventListener("click", copyOutput(() => {
+  if (shareMachine.current.state !== "Shared") {
+    throw new Error("Invalid share state to copy")
+  }
+  return shareMachine.current.data.url.toString()
+}))
 
 shareMachine.on("Closed", _ => shareDOM.overlay.classList.add("hidden")) 
 shareMachine.on("Opened", _ => {
@@ -251,5 +262,5 @@ shareMachine.on("Sharing", async ({ title: _ }) => {
 shareMachine.on("Shared", ({ url, embed }) => {
   shareDOM.modal.dataset.state = "shared"
   shareDOM.outputs.url.output.innerText = url.toString()
-  shareDOM.outputs.iframe.output.innerText = `<iframe src="${embed.toString()}"></iframe>`
+  shareDOM.outputs.iframe.output.innerText = buildShareIframe(embed)
 })
