@@ -435,12 +435,18 @@ body.hide-el #gates-pallete {
   color: var(--black-600);
 }
 
-#share-modal #inputs {
+#share-modal #inputs,
+#share-modal #outputs {
   display: grid;
   gap: 1rem;
 }
 
-#inputs>div {
+#share-modal:not([data-state=shared]) #outputs {
+  display: none;
+}
+
+#inputs>div,
+#outputs>div {
   border: 1px solid var(--black-300);
   border-radius: 6px;
   display: flex;
@@ -463,6 +469,28 @@ body.hide-el #gates-pallete {
   outline: 1px dashed transparent;
 }
 
+#outputs>div .output {
+  flex: 1;
+  font-family: var(--font);
+  font-size: 1rem;
+  min-height: 36px;
+  padding: 0.5rem;
+  margin: 0;
+  border-radius: 6px;
+  outline: 1px dashed transparent;
+  background: var(--black-100);
+  color: var(--black-600);
+  box-sizing: border-box;
+}
+
+#share-modal[data-state=shared] #inputs {
+  display: none;
+}
+
+#share-modal[data-state=shared] #outputs {
+  display: grid;
+}
+
 #share-modal[data-state=shared] #inputs>div input {
   background: var(--black-100);
   color: var(--black-600);
@@ -476,7 +504,8 @@ body.hide-el #gates-pallete {
   background: var(--black-100);
 }
 
-#inputs>div button {
+#inputs>div button,
+#outputs>div button {
   appearance: none;
   color: var(--black-800);
   background: var(--black-100);
@@ -487,6 +516,7 @@ body.hide-el #gates-pallete {
   font-size: 1rem;
   transition: all 0.08s ease-in;
   cursor: pointer;
+  max-height: 36px;
 }
 
 #inputs>div button:hover {

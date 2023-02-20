@@ -174,12 +174,18 @@ const shareDOM = {
 
   inputs: {
     url: {
-      button: definitely($.querySelector<HTMLButtonElement>("#share-modal #url button"), "Share modal's url button is missing"),
-      input: definitely($.querySelector<HTMLInputElement>("#share-modal #url input"), "Share modal's url input is missing"),
+      button: definitely($.querySelector<HTMLButtonElement>("#share-modal #inputs #url button"), "Share modal's url button is missing"),
+      input: definitely($.querySelector<HTMLInputElement>("#share-modal #inputs #url input"), "Share modal's url input is missing"),
     },
+  },
+  outputs: {
     iframe: {
-      button: definitely($.querySelector<HTMLButtonElement>("#share-modal #iframe button"), "Share modal's url button is missing"),
-      input: definitely($.querySelector<HTMLInputElement>("#share-modal #iframe input"), "Share modal's url input is missing"),
+      copy: definitely($.querySelector<HTMLButtonElement>("#share-modal #outputs #iframe button"), "Share modal's iframe copy button is missing"),
+      output: definitely($.querySelector<HTMLInputElement>("#share-modal #outputs #iframe .output"), "Share modal's iframe output element is missing"),
+    },
+    url: {
+      copy: definitely($.querySelector<HTMLButtonElement>("#share-modal #outputs #url button"), "Share modal's url copy button is missing"),
+      output: definitely($.querySelector<HTMLInputElement>("#share-modal #outputs #url .output"), "Share modal's url output element is missing"),
     },
   }
 }
@@ -212,6 +218,6 @@ shareMachine.on("Sharing", async ({ title: _ }) => {
 
 shareMachine.on("Shared", ({ url, embed }) => {
   shareDOM.modal.dataset.state = "shared"
-  shareDOM.inputs.url.input.value = url.toString()
-  shareDOM.inputs.iframe.input.value = `<iframe src="${embed.toString()}"></iframe>`
+  shareDOM.outputs.url.output.innerText = url.toString()
+  shareDOM.outputs.iframe.output.innerText = `<iframe src="${embed.toString()}"></iframe>`
 })
