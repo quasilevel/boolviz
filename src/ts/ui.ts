@@ -204,6 +204,19 @@ shareDOM.closeButton.addEventListener("click", closeShareModal)
 
 shareDOM.inputs.title.button.addEventListener("click", _ => shareMachine.trigger("ShareStart", { title: shareDOM.inputs.title.input.value }))
 
+const copyOutput = async function (this: HTMLButtonElement, _ev: MouseEvent) {
+  const value = this.parentElement?.querySelector(".output")?.innerHTML // FIXME make sure innerText exists in the element
+  if (typeof value === "undefined") {
+    console.error("Copy button's sibling output element is missing")
+    return
+  }
+
+  await navigator.clipboard.writeText(value)
+}
+
+shareDOM.outputs.iframe.copy.addEventListener("click", copyOutput)
+shareDOM.outputs.url.copy.addEventListener("click", copyOutput)
+
 shareMachine.on("Closed", _ => shareDOM.overlay.classList.add("hidden")) 
 shareMachine.on("Opened", _ => {
   shareDOM.overlay.classList.remove("hidden")
