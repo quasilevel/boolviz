@@ -527,13 +527,13 @@ body.hide-el #gates-pallete {
   display: none;
 }
 
-#share-modal[data-state=sharing] #url button {
+#share-modal[data-state=sharing] #title button {
   position: relative;
   color: transparent;
   cursor: not-allowed;
 }
 
-#share-modal[data-state=sharing] #url button:after {
+#share-modal[data-state=sharing] #title button:after {
   content: "|>";
   position: absolute;
   top: 0;

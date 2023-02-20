@@ -173,9 +173,9 @@ const shareDOM = {
   modal: definitely($.querySelector<HTMLDivElement>("#share-modal"), "share modal is missing"),
 
   inputs: {
-    url: {
-      button: definitely($.querySelector<HTMLButtonElement>("#share-modal #inputs #url button"), "Share modal's url button is missing"),
-      input: definitely($.querySelector<HTMLInputElement>("#share-modal #inputs #url input"), "Share modal's url input is missing"),
+    title: {
+      button: definitely($.querySelector<HTMLButtonElement>("#share-modal #inputs #title button"), "Share modal's title button is missing"),
+      input: definitely($.querySelector<HTMLInputElement>("#share-modal #inputs #title input"), "Share modal's title input is missing"),
     },
   },
   outputs: {
@@ -202,13 +202,13 @@ const closeShareModal = (_: MouseEvent): boolean => shareMachine.trigger("Close"
 shareDOM.shareButton.addEventListener("click", openShareModal)
 shareDOM.closeButton.addEventListener("click", closeShareModal)
 
-shareDOM.inputs.url.button.addEventListener("click", _ => shareMachine.trigger("ShareStart", { title: shareDOM.inputs.url.input.value }))
+shareDOM.inputs.title.button.addEventListener("click", _ => shareMachine.trigger("ShareStart", { title: shareDOM.inputs.title.input.value }))
 
 shareMachine.on("Closed", _ => shareDOM.overlay.classList.add("hidden")) 
 shareMachine.on("Opened", _ => {
   shareDOM.overlay.classList.remove("hidden")
   shareDOM.modal.dataset.state = "opened"
-  shareDOM.inputs.url.input.value = ""
+  shareDOM.inputs.title.input.value = ""
 })
 
 shareMachine.on("Sharing", async ({ title: _ }) => {
