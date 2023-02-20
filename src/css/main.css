@@ -337,9 +337,17 @@ body.hide-el #gates-pallete {
   border-radius: 100%;
   width: var(--size);
   height: var(--size);
-  transform: translateX(-50%);
+  stroke: var(--white-primary);
+  stroke-width: 4px;
+  display: grid;
+  place-content: center;
 
+  transform: translateX(-50%);
   transition: opacity 0.1s ease-in 0s;
+}
+
+#delete-widget svg {
+  width: calc(var(--size) / 2);
 }
 
 #delete-widget[data-state="active"] {
