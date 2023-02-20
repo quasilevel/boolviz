@@ -212,6 +212,24 @@ const copyOutput = async function (this: HTMLButtonElement, _ev: MouseEvent) {
   }
 
   await navigator.clipboard.writeText(value)
+
+  const color = getComputedStyle(this).backgroundColor
+
+  const duration = 200
+  this.animate(
+    { backgroundColor: "var(--green-100)" },
+    { duration, fill: "forwards" }
+  )
+
+  this.innerText = "copied"
+
+  setTimeout((el: HTMLButtonElement) => {
+    el.animate(
+      { backgroundColor: color },
+      { duration, fill: "forwards" }
+    )
+    el.innerText = "copy"
+  }, 1500, this)
 }
 
 shareDOM.outputs.iframe.copy.addEventListener("click", copyOutput)
