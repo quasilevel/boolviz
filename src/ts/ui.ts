@@ -207,7 +207,10 @@ shareDOM.inputs.title.button.addEventListener("click", _ => {
 
   console.log(circuit)
 
-  shareMachine.trigger("ShareStart", { title: shareDOM.inputs.title.input.value })
+  shareMachine.trigger("ShareStart", {
+    title: shareDOM.inputs.title.input.value,
+    circuit
+  })
 })
 
 const copyOutput = (value: () => string) => async function (this: HTMLButtonElement, _ev: MouseEvent) {
@@ -259,11 +262,7 @@ shareMachine.on("Opened", _ => {
   shareDOM.inputs.title.input.value = ""
 })
 
-shareMachine.on("Sharing", async ({ title: _ }) => {
-  shareDOM.modal.dataset.state = "sharing"
-  await delay(2000)
-  shareMachine.trigger("ShareEnd", { url: new URL(window.location.toString()) , embed: new URL(window.location.toString()) })
-})
+shareMachine.on("Sharing", async ({ title: _ }) => { shareDOM.modal.dataset.state = "sharing" })
 
 shareMachine.on("Shared", ({ url, embed }) => {
   shareDOM.modal.dataset.state = "shared"
