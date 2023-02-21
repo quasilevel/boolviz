@@ -71,3 +71,10 @@ shareMachine.on("Sharing", async data => {
 		url, embed
 	})
 })
+
+// FIXME actually come up with an abstraction for this
+shareMachine.on("Shared", data => {
+	const idx = localStorage.getItem("count") ?? "0"
+	localStorage.setItem(idx, JSON.stringify(data))
+	localStorage.setItem("count", (parseInt(idx) + 1).toString())
+})
