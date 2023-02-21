@@ -1,8 +1,10 @@
 {
-  "include": ["src/ts/**/*"],
+  "include": [
+    "src/ts/**/*"
+  ],
   "compilerOptions": {
-    "module": "es2020",
-    "target": "es6",
+    "module": "es2022",
+    "target": "es2017",
     "rootDir": "src/ts",
     "outDir": "dist",
     "sourceMap": false,
