@@ -31,7 +31,22 @@ const gb = new Grid({
   boxSize: 100,
 })
 
-const circuit = Circuit.Default()
+const fetchSharedCircuit = async (id: string) => {
+  const res = await fetch(
+    `https://keogami-pocketbase.fly.dev/api/collections/circuits/records/${id}`
+  )
+
+  // FIXME actually check the response
+  return await res.json() as { circuit: ConstructorParameters<typeof Circuit>[0] }
+}
+
+let circuit = Circuit.Default()
+const shareID = new URLSearchParams(location.search).get("share")
+if (shareID !== null) {
+  const args = await fetchSharedCircuit(shareID)
+  circuit = new Circuit(args.circuit)
+}
+
 export const getShareState = () => {
   return {
     ...circuit.asPlain(),
