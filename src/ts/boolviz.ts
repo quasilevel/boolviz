@@ -182,8 +182,6 @@ export const programMachine = new Machine<ProgramStates, ProgramEvents>({
     }
   })
 
-programMachine.debug = true
-
 export const getGateInfo = (idx: number) => {
   const gate = gt.get(idx)
   if (typeof gate === "undefined") {
@@ -368,4 +366,4 @@ export const deleteGate = async (idx: number): Promise<boolean> => {
     [3, 5],
     [4, 6],
   ].map(([f, t]) => connTable.add(f, t))
-})()
+})
