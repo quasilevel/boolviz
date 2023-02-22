@@ -41,11 +41,22 @@ const fetchSharedCircuit = async (id: string) => {
   return await res.json() as { circuit: ConstructorParameters<typeof Circuit>[0] }
 }
 
+const gateMap = new SpatialMap<number>()
+let addGate: (g: Gate) => void;
+
+let currentId = 0
 let circuit = Circuit.Default()
 const shareID = new URLSearchParams(location.search).get("share")
 if (shareID !== null) {
   const args = await fetchSharedCircuit(shareID)
   circuit = new Circuit(args.circuit)
+  addGate = ((m: SpatialMap<number>, t: GateTable) => (g: Gate) => {
+    t.set(currentId, g)
+    m.set(g.coord, currentId)
+    currentId++
+  })(gateMap, circuit.gates)
+
+  ;[...circuit.gates].map(([_, g]) => addGate(g))
 }
 
 export const getShareState = () => {
@@ -56,14 +67,6 @@ export const getShareState = () => {
 }
 
 const gt = circuit.gates
-let currentId = 0
-
-const gateMap = new SpatialMap<number>()
-const addGate = ((m: SpatialMap<number>, t: GateTable) => (g: Gate) => {
-  t.set(currentId, g)
-  m.set(g.coord, currentId)
-  currentId++
-})(gateMap, gt)
 
 const drawGateTable = ((g: Grid) => (table: GateTable) => (
   table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type) as Drawer))
