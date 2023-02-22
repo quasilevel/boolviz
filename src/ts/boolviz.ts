@@ -50,14 +50,15 @@ const shareID = new URLSearchParams(location.search).get("share")
 if (shareID !== null) {
   const args = await fetchSharedCircuit(shareID)
   circuit = new Circuit(args.circuit)
-  addGate = ((m: SpatialMap<number>, t: GateTable) => (g: Gate) => {
-    t.set(currentId, g)
-    m.set(g.coord, currentId)
-    currentId++
-  })(gateMap, circuit.gates)
-
-  ;[...circuit.gates].map(([_, g]) => addGate(g))
 }
+
+addGate = ((m: SpatialMap<number>, t: GateTable) => (g: Gate) => {
+  t.set(currentId, g)
+  m.set(g.coord, currentId)
+  currentId++
+})(gateMap, circuit.gates)
+
+;[...circuit.gates].map(([_, g]) => addGate(g))
 
 export const getShareState = () => {
   return {
