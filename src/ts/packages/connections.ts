@@ -108,7 +108,6 @@ export const drawConnections = (g: Grid) => (gt: GateTable) => (c: Connections) 
   const [gfcoord, gtcoord] = getCoordMappers(g)(gt)
   ctx.save()
   ctx.lineWidth = 2
-  ctx.strokeStyle = "pink"
   c.forEach(drawConnection(ctx)(gfcoord, gtcoord))
   ctx.restore()
 }

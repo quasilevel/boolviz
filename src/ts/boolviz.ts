@@ -15,6 +15,16 @@ if (canvas === null) {
   throw new Error("Cannot find <canvas id='boolviz'></canvas>")
 }
 
+const css = getComputedStyle($.body)
+const colors = {
+  black300: css.getPropertyValue("--black-300"),
+  black700: css.getPropertyValue("--black-700"),
+  black800: css.getPropertyValue("--black-800"),
+  black900: css.getPropertyValue("--black-900"),
+  red100:   css.getPropertyValue("--red-100"),
+  white:    css.getPropertyValue("--white-primary"),
+}
+
 
 { // set canvas dimensions based on css
   const canvasDim = canvas.getBoundingClientRect()
@@ -69,9 +79,17 @@ export const getShareState = () => {
 
 const gt = circuit.gates
 
-const drawGateTable = ((g: Grid) => (table: GateTable) => (
-  table.forEach(it => g.drawAt(it.coord, GateDrawer.get(it.type) as Drawer))
-))(gb)
+const drawGateTable = ((g: Grid) => (table: GateTable, solution?: Map<number, boolean>) => {
+  g.ctx.save()
+  table.forEach((it, idx) => {
+    const color = (typeof solution !== "undefined" && !!solution.get(idx))
+      ? colors.white
+      : colors.black800
+    g.ctx.strokeStyle = color
+    g.drawAt(it.coord, GateDrawer.get(it.type) as Drawer)
+  })
+  g.ctx.restore()
+})(gb)
 
 const drawConnections = dcs(gb)(gt)
 
@@ -201,17 +219,19 @@ const drawSolution = ((grid: Grid) => (sol: Map<number, boolean>) => {
   .map(([idx, _]) => (gt.get(idx)?.coord as Coord))
   .map(c => grid.drawAt(c, (ctx, {x, y}) => {
     ctx.beginPath()
-    ctx.strokeStyle = "deeppink"
+    ctx.strokeStyle = colors.black800
+    ctx.fillStyle = colors.black800
     ctx.lineWidth = 2
     ctx.arc(x, y, 35, 0, Math.PI * 2)
     ctx.stroke()
+    ctx.fill()
     ctx.closePath()
   }))
 })(gb)
 
 const drawSelected: Drawer = (ctx, {x, y}) => {
   ctx.beginPath()
-  ctx.strokeStyle = "pink"
+  ctx.strokeStyle = colors.black900
   ctx.lineWidth = 2
   ctx.arc(x, y, 35, 0, Math.PI * 2)
   ctx.stroke()
@@ -273,7 +293,7 @@ const drawConnection = dc(gb.ctx)(fmapper, tmapper)
 const previewConnection = ((ctx: CanvasRenderingContext2D) => (fidx: number, tidx: number) => {
   ctx.save()
   if (connTable.has(fidx, tidx)) {
-    ctx.strokeStyle = "deeppink"
+    ctx.strokeStyle = colors.black700
   } else {
     ctx.globalAlpha = 0.4
   }
@@ -292,7 +312,7 @@ const frame = (_: number) => {
   gb.ctx.clearRect(0, 0, canvas.width, canvas.height)
   gb.drawGrid()
   gb.ctx.lineWidth = 2
-  gb.ctx.strokeStyle = "pink"
+  gb.ctx.strokeStyle = colors.black800
   const currentIdx = gateMap.get(gb.getCurrentBox())
   if (programMachine.current.state === "adding" && typeof currentIdx === "undefined") {
     const { type } = programMachine.current.data
@@ -309,11 +329,16 @@ const frame = (_: number) => {
     gb.drawAt(g.coord, drawSelected)
   }
 
-  drawGateTable(gt)
+  gb.ctx.save()
+  gb.ctx.strokeStyle = colors.black800
   drawConnections(connTable)
+  gb.ctx.restore()
 
   if (programMachine.current.state === "running") {
     drawSolution(programMachine.current.data.solution)
+    drawGateTable(gt, programMachine.current.data.solution)
+  } else {
+    drawGateTable(gt)
   }
 
   if (typeof currentIdx !== "undefined" &&
