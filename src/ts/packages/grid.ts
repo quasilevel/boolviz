@@ -52,6 +52,13 @@ export default class Grid {
     })
   }
 
+  getBoundingBox(gridCoord: Coord): DOMRect {
+    // const coord = this.absBoxCoord(gridCoord)
+    const coord = gridCoord.clone()
+    coord.mutScale(this.boxSize)
+    return new DOMRect(coord.x, coord.y, this.boxSize, this.boxSize)
+  }
+
   drawAt(c: Coord, d: Drawer) {
     const coord = this.absBoxCoord(c)
     this.ctx.save()

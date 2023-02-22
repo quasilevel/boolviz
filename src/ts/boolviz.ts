@@ -1,4 +1,4 @@
-import { Connections, drawConnection as dc, drawConnections as dcs, getCoordMappers } from './packages/connections.js'
+import { drawConnection as dc, drawConnections as dcs, getCoordMappers } from './packages/connections.js'
 import { Gate, GateDrawer, GateTable, GateType } from './packages/gates.js'
 import Grid, { Drawer, GridClickEvent } from './packages/grid.js'
 import Mouse from './packages/mouse.js'
@@ -6,6 +6,7 @@ import SpatialMap from './packages/spatialmap.js'
 import Coord from './packages/coord.js'
 import { circuitSolver, listInvalidGates } from './packages/solver.js'
 import { Circuit } from './packages/circuit.js'
+import { Machine, pass } from './packages/state.js'
 const $ = document
 
 const canvas = $.querySelector('canvas#boolviz') as HTMLCanvasElement
@@ -71,28 +72,130 @@ const drawGateTable = ((g: Grid) => (table: GateTable) => (
 const drawConnections = dcs(gb)(gt)
 
 const connTable = circuit.connections
-const solution = new Map()
 
-type ProgramState = {
-  gateAdditionRequest: {
-    type: GateType
-    cancel: () => void
-  } | null
-  selected: number | null
-  connectionPending: {
+type ProgramStates = {
+  designing: void,
+  running: {
+    solution: Map<number, boolean>,
+    solveFor: ReturnType<ReturnType<typeof circuitSolver>>[0]
+    updateFor: ReturnType<ReturnType<typeof circuitSolver>>[1]
+  },
+  selected: {
     idx: number
-  } | null
+  },
+  adding: {
+    type: GateType
+  }
 }
 
-const state: ProgramState = {
-  gateAdditionRequest: null,
-  selected: null,
-  connectionPending: null,
+type ProgramEvents = {
+  add_gate: {
+    type: GateType
+  },
+  cancel_add_gate: void,
+  place_gate: {
+    coord: Coord
+  },
+  switch_gate: {
+    type: GateType
+  },
+  select_gate: {
+    idx: number
+  },
+  deselect_gate: void,
+  delete_gate: void,
+  add_connection: {
+    to: number
+  },
+  toggle_running: void,
+  switch_input: {
+    idx: number
+  },
+}
+
+export const programMachine = new Machine<ProgramStates, ProgramEvents>({
+  state: "designing",
+  data: undefined
+}, {
+    designing: {
+      select_gate: pass("selected"),
+      add_gate: pass("adding"),
+      toggle_running: _ => {
+        const map = new Map()
+        const inputs = filterGate(gt, GateType.IN_TERM)
+        const outputs = filterGate(gt, GateType.OUT_TERM)
+
+        inputs.map(it => map.set(it, false))
+  
+        const [solveFor, updateFor] = circuitSolver(gt, connTable)(map)
+        outputs.map(solveFor)
+        return {
+          state: "running",
+          data: {
+            solution: map,
+            solveFor, updateFor
+          }
+        }
+      }
+    },
+    adding: {
+      place_gate: ({ coord }, { type }) => {
+        addGate({ type, coord })
+        return { state: "designing", data: undefined }
+      },
+      switch_gate: pass("adding"),
+      cancel_add_gate: pass("designing")
+    },
+    running: {
+      toggle_running: pass("designing"),
+      switch_input: ({ idx }, from) => {
+        from.updateFor(idx, !from.solution.get(idx))
+        return {
+          state: "running", data: from
+        }
+      }
+    },
+    selected: {
+      select_gate: ({ idx: to }, { idx: from }) => {
+        if (to !== from) {
+          return { state: "selected", data: { idx: to }}
+        }
+        return { state: "designing", data: undefined }
+      },
+      add_connection: ({ to }, { idx: from }) => {
+        const toGate = gt.get(to)!
+        if (!isValidConnection(gt.get(from)!.coord, toGate.coord)) {
+          return { state: "selected", data: { idx: to } }
+        }
+        connTable.add(from, to)
+        if (toGate.type === GateType.OUT_TERM) {
+          return { state: "designing", data: undefined }
+        }
+        return { state: "selected", data: { idx: to } }
+      },
+      delete_gate: (_, { idx }) => {
+        deleteGate(idx)
+        return { state: "designing", data: undefined }
+      },
+      deselect_gate: pass("designing"),
+      add_gate: pass("adding")
+    }
+  })
+
+programMachine.debug = true
+
+export const getGateInfo = (idx: number) => {
+  const gate = gt.get(idx)
+  if (typeof gate === "undefined") {
+    return undefined
+  }
+  const box = gb.getBoundingBox(gate.coord)
+  return { gate, box }
 }
 
 const drawSolution = ((grid: Grid) => (sol: Map<number, boolean>) => {
   ;[...sol]
-  .filter(([idx, val]) => val && (idx !== state.selected))
+  .filter(([_idx, val]) => val)
   .map(([idx, _]) => (gt.get(idx)?.coord as Coord))
   .map(c => grid.drawAt(c, (ctx, {x, y}) => {
     ctx.beginPath()
@@ -122,7 +225,6 @@ export interface GateClickEvent {
 addEventListener("grid_click", (({ detail }: CustomEvent<GridClickEvent>) => {
   const gateIndex = gateMap.get(detail.coord)
   if (typeof gateIndex === "undefined") {
-    dispatchEvent(new CustomEvent<GateClickEvent>("gate_click"))
     return
   }
 
@@ -133,6 +235,29 @@ addEventListener("grid_click", (({ detail }: CustomEvent<GridClickEvent>) => {
       absCoord: gb.absBoxCoord((gt.get(gateIndex) as Gate).coord)
     }
   }))
+}) as EventListener)
+
+addEventListener("gate_click", (({ detail }: CustomEvent<GateClickEvent>) => {
+  if (programMachine.current.state !== "selected") {
+    programMachine.trigger("select_gate", { idx: detail.index })
+  }
+
+  programMachine.trigger("add_connection", { to: detail.index })
+
+  if (detail.gate.type === GateType.IN_TERM) {
+    programMachine.trigger("switch_input", { idx: detail.index })
+  }
+}) as EventListener)
+
+addEventListener("grid_click", (({ detail }: CustomEvent<GridClickEvent>) => {
+  if (!gateMap.has(detail.coord)) {
+    programMachine.trigger("place_gate", {
+      coord: detail.coord, 
+    })
+    // short circuit if the above trigger succeeds
+    || programMachine.trigger("deselect_gate", undefined)
+    return
+  }
 }) as EventListener)
 
 const isValidConnection = (from: Coord, to: Coord): boolean => {
@@ -166,139 +291,39 @@ const frame = (_: number) => {
   gb.drawGrid()
   gb.ctx.lineWidth = 2
   gb.ctx.strokeStyle = "pink"
-  const { gateAdditionRequest: gar } = state
   const currentIdx = gateMap.get(gb.getCurrentBox())
-  if (gar !== null && typeof currentIdx === "undefined") {
+  if (programMachine.current.state === "adding" && typeof currentIdx === "undefined") {
+    const { type } = programMachine.current.data
     gb.drawUnderCurrentBox((ctx, coord) => {
       ctx.save()
       ctx.globalAlpha = 0.4
-      ;(GateDrawer.get(gar.type) as Drawer)(ctx, coord)
+      ;(GateDrawer.get(type) as Drawer)(ctx, coord)
       ctx.restore()
     })
   }
 
-  if (state.selected !== null) {
-    const g = gt.get(state.selected) as Gate
+  if (programMachine.current.state === "selected") {
+    const g = gt.get(programMachine.current.data.idx) as Gate
     gb.drawAt(g.coord, drawSelected)
   }
 
   drawGateTable(gt)
   drawConnections(connTable)
-  drawSolution(solution)
+
+  if (programMachine.current.state === "running") {
+    drawSolution(programMachine.current.data.solution)
+  }
 
   if (typeof currentIdx !== "undefined" &&
-      state.connectionPending !== null &&
-      canPreviewConnection(state.connectionPending.idx as number, currentIdx as number)) {
-    previewConnection(state.connectionPending.idx as number, currentIdx)
+      programMachine.current.state === "selected" &&
+      canPreviewConnection(programMachine.current.data.idx, currentIdx as number)) {
+    previewConnection(programMachine.current.data.idx as number, currentIdx)
   }
 }
 
 requestAnimationFrame(frame)
 
-export const selectGate = (idx: number) => {
-  if (typeof gt.get(idx) === "undefined") {
-    return false
-  }
-
-  state.selected = idx
-  return true
-}
-
-export const deselectGate = () => {
-  if (state.selected === null) {
-    return false
-  }
-
-  state.selected = null
-  return true
-}
-
-export const enum ConnectionResult {
-  Connected, Disconnected, Cancelled, Rejected
-}
-export const requestNewConnection = (idx: number): Promise<ConnectionResult> => {
-  let cleanUp: () => void
-  const listener = (res: any) => (ev: CustomEvent<GridClickEvent>) => {
-    const toIndex = gateMap.get(ev.detail.coord)
-    if (typeof toIndex === "undefined") {
-      res(ConnectionResult.Cancelled)
-      cleanUp()
-      return
-    }
-
-    const fromGate = gt.get(idx) as Gate
-    if (!isValidConnection(fromGate.coord, ev.detail.coord)) {
-      res(ConnectionResult.Rejected)
-      cleanUp()
-      return
-    }
-
-    if (connTable.has(idx, toIndex)) {
-      res(ConnectionResult.Disconnected)
-      connTable.delete(idx, toIndex)
-      cleanUp()
-      return
-    }
-
-    connTable.add(idx, toIndex)
-    res(ConnectionResult.Connected)
-    cleanUp()
-    return
-  }
-
-  return new Promise(res => {
-    const l = listener(res) as EventListener
-    cleanUp = () => {
-      removeEventListener("grid_click", l)
-      state.connectionPending = null
-    }
-    if (gt.get(idx) === undefined) {
-      res(ConnectionResult.Rejected)
-      return
-    }
-
-    state.connectionPending = { idx: idx }
-
-    addEventListener("grid_click", l) 
-  })
-}
-
-export const enum AdditionResult {
-  Added, Cancelled
-}
-export const requestGateAddition = (t: GateType): Promise<AdditionResult> => {
-  if (state.gateAdditionRequest !== null) {
-    state.gateAdditionRequest.cancel()
-  }
-
-  let cleanUp: () => void
-  const listener = (res: any) => (ev: CustomEvent<GridClickEvent>) => {
-    addGate({
-      type: t,
-      coord: ev.detail.coord,
-    })
-    res(AdditionResult.Added)
-
-    cleanUp()
-  }
-
-  return new Promise<AdditionResult>(res => {
-    const l = listener(res)
-    cleanUp = () => {
-      removeEventListener("grid_click", l as EventListener)
-      state.gateAdditionRequest = null
-    }
-
-    state.gateAdditionRequest = {
-      type: t, cancel: () => {
-        res(AdditionResult.Cancelled)
-        cleanUp()
-      }
-    }
-
-    addEventListener("grid_click", l as EventListener)
-  })
-}
+export const deselectGate = () => programMachine.trigger("deselect_gate", undefined)
 
 const filterGate = (table: GateTable, type: GateType): number[] => {
   return [...table]
@@ -308,22 +333,6 @@ const filterGate = (table: GateTable, type: GateType): number[] => {
 
 export const validateCircuit = async () => {
   return listInvalidGates(gt, connTable)
-}
-
-export const requestCircuitEval = async () => {
-  const inputs = filterGate(gt, GateType.IN_TERM)
-  const outputs = filterGate(gt, GateType.OUT_TERM)
-
-  inputs.map(it => solution.set(it, false))
-  
-  const [solveFor, updateFor] = circuitSolver(gt, connTable)(solution)
-  outputs.map(solveFor)
-
-  return (idx: number) => updateFor(idx, !solution.get(idx))
-}
-
-export const endCircuitEval = async () => {
-  solution.clear()
 }
 
 export const deleteGate = async (idx: number): Promise<boolean> => {
@@ -359,10 +368,4 @@ export const deleteGate = async (idx: number): Promise<boolean> => {
     [3, 5],
     [4, 6],
   ].map(([f, t]) => connTable.add(f, t))
-
-  solution.set(0, false).set(1, true)
-  console.log(listInvalidGates(gt, connTable))
-
-  const [solveFor, _] = circuitSolver(gt, connTable)(solution)
-  ;[5, 6].map(solveFor)
-})
+})()

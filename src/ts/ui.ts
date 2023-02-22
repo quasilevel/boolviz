@@ -1,7 +1,8 @@
-import { requestGateAddition, GateClickEvent, selectGate, deselectGate, requestNewConnection, validateCircuit, requestCircuitEval, endCircuitEval, deleteGate, getShareState } from "./boolviz.js"
+import { getGateInfo, getShareState, programMachine } from "./boolviz.js"
 import Coord from "./packages/coord.js"
 import { GateType } from "./packages/gates.js"
 import { shareMachine } from "./packages/share.js"
+import { Machine, } from "./packages/state.js"
 
 setTimeout(() => {
   document.body.classList.remove("hide-el")
@@ -31,138 +32,113 @@ enum GateButtonState {
   NORMAL = "normal"
 }
 
-enum State {
-  Designing, Running,
-}
+const gatesButtons = $.querySelectorAll<HTMLDivElement>(".gate-con")
 
-interface Program {
-  state: State
-  flipper?: (idx: number) => void
-  selected?: number
-}
-
-const program: Program = {
-  state: State.Designing,
-}
-
-const gatesButtons = $.querySelectorAll(".gate-con")
-
-gatesButtons.forEach(it => {
-  const el = it as HTMLDivElement
-  el.dataset.state = GateButtonState.NORMAL
-  const gate = el.dataset.type
-  if (typeof gate === "undefined") {
-    console.warn("There exists a .gate-con without a data-type attrib set on it. (skipping)", el)
-    return
-  }
-  const gt = gateEnumMap.get(gate as string)
-
-  el.addEventListener("click", async () => {
-    if (el.dataset.state === GateButtonState.SELECTED) {
-      return
+const gateButtonMap = new Map<GateType, HTMLDivElement>(
+  [...gatesButtons] // take all gate buttons represented as divs in html
+  .filter(button => { // remove the ones without a type set
+    const type = gateEnumMap.get(button.dataset.type as string)
+    const typeNotDefined = typeof type !== "undefined"
+    if (!typeNotDefined) {
+      console.warn("There exists a .gate-con without a data-type attrib set on it. (skipping)", button)
     }
-    el.dataset.state = GateButtonState.SELECTED
-    await requestGateAddition(gt as GateType)
-    el.dataset.state = GateButtonState.NORMAL
+    return typeNotDefined
+  })
+  .map<[GateType, HTMLDivElement]>(button => { // map each typed button to the type
+    const type = gateEnumMap.get(button.dataset.type as string)!
+    return [type, button]
+  })
+)
+
+type SelectionStates = {
+  normal: void,
+  selected: GateType
+}
+
+type SelectionEvents = {
+  select: GateType,
+  deselect: void,
+  cancel: void,
+}
+
+const selectionMachine = new Machine<SelectionStates, SelectionEvents>({
+  state: "normal", data: undefined
+}, {
+    normal: {
+      select: (to) => {
+        gateButtonMap.get(to)!.dataset.state = GateButtonState.SELECTED
+        programMachine.trigger("add_gate", { type: to })
+        return { state: "selected", data: to }
+      }
+    },
+    selected: {
+      select: (to, from) => {
+        gateButtonMap.get(from)!.dataset.state = GateButtonState.NORMAL
+        gateButtonMap.get(to)!.dataset.state = GateButtonState.SELECTED
+        programMachine.trigger("switch_gate", { type: to })
+        return { state: "selected", data: to }
+      },
+      deselect: (_, from) => {
+        gateButtonMap.get(from)!.dataset.state = GateButtonState.NORMAL
+        return { state: "normal", data: undefined }
+      },
+      cancel: (_, from) => {
+        gateButtonMap.get(from)!.dataset.state = GateButtonState.NORMAL
+        programMachine.trigger("cancel_add_gate", undefined)
+        return { state: "normal", data: undefined }
+      }
+    }
+  })
+
+programMachine.exit("adding", _ => {
+  selectionMachine.trigger("deselect", undefined)
+})
+
+;[...gateButtonMap].map(([type, el])=> {
+  el.addEventListener("click", async () => {
+    if (
+      selectionMachine.current.state === "selected" &&
+      selectionMachine.current.data === type
+    ) {
+      return selectionMachine.trigger("cancel", undefined)
+    }
+    selectionMachine.trigger("select", type)
   })
 })
 
 const deleteButton = document.querySelector("#delete-widget") as HTMLButtonElement
 deleteButton?.addEventListener("click", async () => {
-  if (typeof program.selected === "undefined") {
-    return
-  }
+  programMachine.trigger("delete_gate", undefined)
+})
 
-  await deleteGate(program.selected)
-  deselect()
+programMachine.on("selected", ({ idx }) => {
+  const { box } = getGateInfo(idx)! // guaranteed because idx is provided by the machine
+  moveUnder(new Coord(box.left + (box.width/2), box.bottom))
+  deleteButton.dataset.state = "active"
+})
 
-  document.querySelector("canvas")?.click()
+programMachine.on("adding", _ => {
+  deleteButton.dataset.state = "inactive"
+})
+
+programMachine.on("designing", _ => {
+  deleteButton.dataset.state = "inactive"
+  $.body.dataset.state = "designing"
+})
+
+programMachine.on("running", _ => {
+  $.body.dataset.state = "running"
 })
 
 const moveUnder = (c: Coord) => {
-  deleteButton.style.left = `${c.x}px`
-  deleteButton.style.top = `${c.y + 40}px`
+  deleteButton.style.left = `${c.x + 15}px`
+  deleteButton.style.top = `${c.y + 44}px`
 }
-
-const select = (data: GateClickEvent) => {
-  selectGate(data.index)
-  program.selected = data.index
-
-  moveUnder(data.absCoord)
-  deleteButton.dataset.state = "active"
-}
-
-const deselect = () => {
-  deselectGate()
-  program.selected = undefined
-
-  deleteButton.dataset.state = "inactive"
-}
-
-const selectionEv = async ({ detail: data }: CustomEvent<GateClickEvent>) => {
-  if (data === null) {
-    deselect()
-    return
-  }
-
-  select(data)
-  removeEventListener("gate_click", (selectionEv as unknown) as EventListener)
-
-  await requestNewConnection(data.index)
-  deselect()
-
-  addEventListener("gate_click", (selectionEv as unknown) as EventListener)
-}
-
-const flippingEv = async ({ detail: data }: CustomEvent<GateClickEvent>) => {
-  if (data === null) return
-  if (data.gate.type !== GateType.IN_TERM) return
-
-  program.flipper?.(data.index)
-}
-
-const events: Map<State, unknown> = new Map([
-  [State.Designing, selectionEv],
-  [State.Running, flippingEv],
-])
-
-const switchEventHandlers = (from: State, to: State) => {
-  removeEventListener("gate_click", events.get(from) as EventListener)
-  addEventListener("gate_click", events.get(to) as EventListener)
-}
-
-addEventListener("gate_click", (selectionEv as unknown) as EventListener)
 
 const runButton = definitely($.querySelector<HTMLButtonElement>("#runner button"), "runer button is missing")
 
-const buttonIcons = new Map([
-  [State.Running, "/src/svg/End.svg"],
-  [State.Designing, "/src/svg/Run.svg"]
-])
-
-const switchButtonState = ((b: HTMLButtonElement) => {
-  const img = b.querySelector("img") as HTMLImageElement
-  return (s: State) => {
-    img.src = buttonIcons.get(s) as string
-  }
-})(runButton)
-
 runButton.addEventListener("click", async () => {
-  if (program.state === State.Designing) {
-    const invalid = await validateCircuit()
-    if (invalid.size !== 0) {
-      console.error(invalid)
-      return
-    }
-    program.flipper = await requestCircuitEval()
-  } else if (program.state === State.Running) {
-    await endCircuitEval()
-  }
-
-  const newState = program.state === State.Running ? State.Designing : State.Running
-  switchButtonState(newState)
-  switchEventHandlers(program.state, newState)
-  program.state = newState
+  programMachine.trigger("toggle_running", undefined)
 })
 
 // Share
@@ -190,12 +166,6 @@ const shareDOM = {
   }
 }
 
-function delay(ms: number) {
-  return new Promise<number>((res) => {
-    setTimeout(() => res(ms), ms)
-  })
-}
-
 const openShareModal = (_: MouseEvent): boolean => shareMachine.trigger("Open", undefined)
 const closeShareModal = (_: MouseEvent): boolean => shareMachine.trigger("Close", undefined)
 
@@ -204,8 +174,6 @@ shareDOM.closeButton.addEventListener("click", closeShareModal)
 
 shareDOM.inputs.title.button.addEventListener("click", _ => {
   const circuit = getShareState()
-
-  console.log(circuit)
 
   shareMachine.trigger("ShareStart", {
     title: shareDOM.inputs.title.input.value,
