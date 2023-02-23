@@ -229,14 +229,32 @@ const drawSolution = ((grid: Grid) => (sol: Map<number, boolean>) => {
   }))
 })(gb)
 
-const drawSelected: Drawer = (ctx, {x, y}) => {
+type StrokeAroundGateConfig = {
+  color: string
+  dashes: number[]
+  width: number
+}
+
+const strokeAroundGate = (config: Partial<StrokeAroundGateConfig>): Drawer => (ctx, {x, y}) => {
   ctx.beginPath()
-  ctx.strokeStyle = colors.black900
-  ctx.lineWidth = 2
+  ;("color" in config) && (ctx.strokeStyle = config.color!)
+  ;("dashes" in config) && (ctx.setLineDash(config.dashes!))
+  ;("width" in config) && (ctx.lineWidth = config.width!)
   ctx.arc(x, y, 35, 0, Math.PI * 2)
   ctx.stroke()
   ctx.closePath()
 }
+
+const drawSelected = strokeAroundGate({
+  color: colors.black900,
+  width: 2
+})
+
+const drawHover = strokeAroundGate({
+  color: colors.black300,
+  width: 2,
+  dashes: [5, 5]
+})
 
 export interface GateClickEvent {
   index: number
@@ -313,7 +331,16 @@ const frame = (_: number) => {
   gb.drawGrid()
   gb.ctx.lineWidth = 2
   gb.ctx.strokeStyle = colors.black800
+
   const currentIdx = gateMap.get(gb.getCurrentBox())
+  hoverable: if (typeof currentIdx !== "undefined") {
+    if (programMachine.current.state === "running" && gt.get(currentIdx)!.type !== GateType.IN_TERM) {
+      break hoverable
+    }
+    const g = gt.get(currentIdx) as Gate
+    gb.drawAt(g.coord, drawHover)
+  }
+
   if (programMachine.current.state === "adding" && typeof currentIdx === "undefined") {
     const { type } = programMachine.current.data
     gb.drawUnderCurrentBox((ctx, coord) => {
