@@ -1,6 +1,6 @@
 import { drawConnection as dc, drawConnections as dcs, getCoordMappers } from './packages/connections.js'
 import { Gate, GateDrawer, GateTable, GateType } from './packages/gates.js'
-import Grid, { Drawer, GridClickEvent } from './packages/grid.js'
+import Grid, { drawAll, Drawer, GridClickEvent } from './packages/grid.js'
 import Mouse from './packages/mouse.js'
 import SpatialMap from './packages/spatialmap.js'
 import Coord from './packages/coord.js'
@@ -52,6 +52,7 @@ const fetchSharedCircuit = async (id: string) => {
 }
 
 const gateMap = new SpatialMap<number>()
+let invalidGates: Map<number, [number, number]>
 let addGate: (g: Gate) => void;
 
 let currentId = 0
@@ -87,6 +88,14 @@ const drawGateTable = ((g: Grid) => (table: GateTable, solution?: Map<number, bo
       : colors.black800
     g.ctx.strokeStyle = color
     g.drawAt(it.coord, GateDrawer.get(it.type) as Drawer)
+
+    if (!invalidGates.has(idx)) {
+      return
+    }
+    if (programMachine.current.state === "selected" && programMachine.current.data.idx === idx) {
+      return
+    }
+    g.drawAt(it.coord, drawError)
   })
   g.ctx.restore()
 })(gb)
@@ -163,6 +172,7 @@ export const programMachine = new Machine<ProgramStates, ProgramEvents>({
     adding: {
       place_gate: ({ coord }, { type }) => {
         addGate({ type, coord })
+        invalidGates = listInvalidGates(gt, connTable)
         return { state: "designing", data: undefined }
       },
       switch_gate: pass("adding"),
@@ -190,6 +200,7 @@ export const programMachine = new Machine<ProgramStates, ProgramEvents>({
           return { state: "selected", data: { idx: to } }
         }
         connTable.add(from, to)
+        invalidGates = listInvalidGates(gt, connTable)
         if (toGate.type === GateType.OUT_TERM) {
           return { state: "designing", data: undefined }
         }
@@ -197,6 +208,7 @@ export const programMachine = new Machine<ProgramStates, ProgramEvents>({
       },
       delete_gate: (_, { idx }) => {
         deleteGate(idx)
+        invalidGates = listInvalidGates(gt, connTable)
         return { state: "designing", data: undefined }
       },
       deselect_gate: pass("designing"),
@@ -255,6 +267,35 @@ const drawHover = strokeAroundGate({
   width: 2,
   dashes: [5, 5]
 })
+
+const drawError = strokeAroundGate({
+  color: colors.red100,
+  dashes: [5, 5],
+  width: 2
+})
+
+const drawErrorSelected = strokeAroundGate({
+  color: colors.red100,
+  width: 2
+})
+
+const drawErrorLabel = (error: number): Drawer => (ctx, coord) => {
+  const sign = (error <= 0) ? "-" : "+"
+  const label = sign.repeat(Math.abs(error))
+  ctx.font = "1.5rem monospace"
+  const width = ctx.measureText(label).width
+  const { x, y } = coord.clone().add(new Coord(-width/2, -36))
+  ctx.beginPath()
+  ctx.fillStyle = colors.red100
+  ctx.fillText(label, x, y)
+  ctx.fill()
+  ctx.closePath()
+}
+const drawErrorHover = (error: number) => drawAll(drawErrorLabel(error), strokeAroundGate({
+  color: colors.red100,
+  dashes: [5, 5],
+  width: 2
+}))
 
 export interface GateClickEvent {
   index: number
@@ -328,7 +369,7 @@ const canPreviewConnection = (fidx: number, tidx: number): boolean => {
 const frame = (_: number) => {
   requestAnimationFrame(frame)
   gb.ctx.clearRect(0, 0, canvas.width, canvas.height)
-  gb.drawGrid()
+  // gb.drawGrid()
   gb.ctx.lineWidth = 2
   gb.ctx.strokeStyle = colors.black800
 
@@ -337,8 +378,16 @@ const frame = (_: number) => {
     if (programMachine.current.state === "running" && gt.get(currentIdx)!.type !== GateType.IN_TERM) {
       break hoverable
     }
+    if (programMachine.current.state === "selected" && programMachine.current.data.idx === currentIdx) {
+      break hoverable
+    }
     const g = gt.get(currentIdx) as Gate
-    gb.drawAt(g.coord, drawHover)
+    if (invalidGates.has(currentIdx)) {
+      const [actual, expected] = invalidGates.get(currentIdx)!
+      gb.drawAt(g.coord, drawErrorHover(expected - actual))
+    } else {
+      gb.drawAt(g.coord, drawHover)
+    }
   }
 
   if (programMachine.current.state === "adding" && typeof currentIdx === "undefined") {
@@ -353,7 +402,7 @@ const frame = (_: number) => {
 
   if (programMachine.current.state === "selected") {
     const g = gt.get(programMachine.current.data.idx) as Gate
-    gb.drawAt(g.coord, drawSelected)
+    gb.drawAt(g.coord, (invalidGates.has(programMachine.current.data.idx)) ? drawErrorSelected : drawSelected)
   }
 
   gb.ctx.save()
@@ -385,11 +434,7 @@ const filterGate = (table: GateTable, type: GateType): number[] => {
   .map(([idx, _]) => idx)
 }
 
-export const validateCircuit = async () => {
-  return listInvalidGates(gt, connTable)
-}
-
-export const deleteGate = async (idx: number): Promise<boolean> => {
+const deleteGate = (idx: number): boolean => {
   if (!gt.has(idx)) return false
 
   gateMap.remove((gt.get(idx) as Gate).coord)

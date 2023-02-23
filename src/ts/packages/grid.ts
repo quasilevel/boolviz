@@ -22,6 +22,9 @@ export type GridRect = {
 }
 
 export type Drawer = (ctx: CanvasRenderingContext2D, coord: Coord) => void
+export const drawAll = (...drawers: Drawer[]): Drawer => (ctx, coord) => {
+  drawers.forEach(draw => draw(ctx, coord))
+}
 
 type Transform = [number, number, number, number, number, number]
 
