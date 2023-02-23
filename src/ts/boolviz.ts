@@ -108,6 +108,17 @@ const drawConnections = dcs(gb)(gt)
 
 const connTable = circuit.connections
 
+const toggleConnection = (from: number, to: number): boolean => {
+  const toGate = gt.get(to)! // FIXME make these definitely valid
+  const fromGate = gt.get(from)!
+  const has = connTable.has(from, to)
+  if (!has && !isValidConnection(fromGate.coord, toGate.coord)) {
+    return false
+  }
+  has ? connTable.delete(from, to) : connTable.add(from, to)
+  return true
+}
+
 type ProgramStates = {
   designing: void,
   running: {
@@ -139,7 +150,7 @@ type ProgramEvents = {
   },
   deselect_gate: void,
   delete_gate: void,
-  add_connection: {
+  toggle_connection: {
     to: number
   },
   toggle_running: void,
@@ -198,14 +209,11 @@ export const programMachine = new Machine<ProgramStates, ProgramEvents>({
         }
         return { state: "designing", data: undefined }
       },
-      add_connection: ({ to }, { idx: from }) => {
-        const toGate = gt.get(to)!
-        if (!isValidConnection(gt.get(from)!.coord, toGate.coord)) {
-          return { state: "selected", data: { idx: to } }
+      toggle_connection: ({ to }, { idx: from }) => {
+        if (toggleConnection(from, to)) {
+          invalidGates = listInvalidGates(gt, connTable)
         }
-        connTable.add(from, to)
-        invalidGates = listInvalidGates(gt, connTable)
-        if (toGate.type === GateType.OUT_TERM) {
+        if (gt.get(to)!.type === GateType.OUT_TERM) {
           return { state: "designing", data: undefined }
         }
         return { state: "selected", data: { idx: to } }
@@ -228,22 +236,6 @@ export const getGateInfo = (idx: number) => {
   const box = gb.getBoundingBox(gate.coord)
   return { gate, box }
 }
-
-const drawSolution = ((grid: Grid) => (sol: Map<number, boolean>) => {
-  ;[...sol]
-  .filter(([_idx, val]) => val)
-  .map(([idx, _]) => (gt.get(idx)?.coord as Coord))
-  .map(c => grid.drawAt(c, (ctx, {x, y}) => {
-    ctx.beginPath()
-    ctx.strokeStyle = colors.black800
-    ctx.fillStyle = colors.black800
-    ctx.lineWidth = 2
-    ctx.arc(x, y, 35, 0, Math.PI * 2)
-    ctx.stroke()
-    ctx.fill()
-    ctx.closePath()
-  }))
-})(gb)
 
 type StrokeAroundGateConfig = {
   color: string
@@ -327,7 +319,7 @@ addEventListener("gate_click", (({ detail }: CustomEvent<GateClickEvent>) => {
     programMachine.trigger("select_gate", { idx: detail.index })
   }
 
-  programMachine.trigger("add_connection", { to: detail.index })
+  programMachine.trigger("toggle_connection", { to: detail.index })
 
   if (detail.gate.type === GateType.IN_TERM) {
     programMachine.trigger("switch_input", { idx: detail.index })
@@ -355,11 +347,7 @@ const drawConnection = dc(gb.ctx)(fmapper, tmapper)
 
 const previewConnection = ((ctx: CanvasRenderingContext2D) => (fidx: number, tidx: number) => {
   ctx.save()
-  if (connTable.has(fidx, tidx)) {
-    ctx.strokeStyle = colors.black700
-  } else {
-    ctx.globalAlpha = 0.4
-  }
+  ctx.strokeStyle = colors.black400
   drawConnection(fidx, tidx)
   ctx.restore()
 })(gb.ctx)
@@ -367,7 +355,7 @@ const previewConnection = ((ctx: CanvasRenderingContext2D) => (fidx: number, tid
 const canPreviewConnection = (fidx: number, tidx: number): boolean => {
   return isValidConnection(
     (gt.get(fidx) as Gate).coord, (gt.get(tidx) as Gate).coord
-  )
+  ) && !connTable.has(fidx, tidx)
 }
 
 const frame = (time: number) => {
@@ -421,11 +409,15 @@ const frame = (time: number) => {
       return
     }
 
+    if (to === currentIdx && programMachine.current.state === "selected" && programMachine.current.data.idx === from) {
+      ctx.strokeStyle = colors.red100
+      return
+    }
+
     ctx.strokeStyle = colors.black800
   })
 
   if (programMachine.current.state === "running") {
-    // drawSolution(programMachine.current.data.solution)
     drawGateTable(gt, programMachine.current.data.solution)
   } else {
     drawGateTable(gt)
