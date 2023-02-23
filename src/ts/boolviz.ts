@@ -18,6 +18,8 @@ if (canvas === null) {
 const css = getComputedStyle($.body)
 const colors = {
   black300: css.getPropertyValue("--black-300"),
+  black400: css.getPropertyValue("--black-400"),
+  black500: css.getPropertyValue("--black-500"),
   black700: css.getPropertyValue("--black-700"),
   black800: css.getPropertyValue("--black-800"),
   black900: css.getPropertyValue("--black-900"),
@@ -87,7 +89,7 @@ const drawGateTable = ((g: Grid) => (table: GateTable, solution?: Map<number, bo
   table.forEach((it, idx) => {
     const color = typeof solution === "undefined"
       ? colors.black800
-      : !!solution.get(idx) ? colors.white : colors.black300
+      : !!solution.get(idx) ? colors.black800 : colors.black400
     g.ctx.strokeStyle = color
     g.drawAt(it.coord, GateDrawer.get(it.type) as Drawer)
 
@@ -410,7 +412,7 @@ const frame = (time: number) => {
   drawConnections(connTable, ([from, to], ctx) => {
     if (programMachine.current.state === "running") {
       const s = !!programMachine.current.data.solution.get(from)
-      const color = s ? colors.black800 : colors.black300
+      const color = s ? colors.black800 : colors.black400
       const dash = s ? [10, 10] : []
       const offset = time / 100
       ctx.setLineDash(dash)
@@ -423,7 +425,7 @@ const frame = (time: number) => {
   })
 
   if (programMachine.current.state === "running") {
-    drawSolution(programMachine.current.data.solution)
+    // drawSolution(programMachine.current.data.solution)
     drawGateTable(gt, programMachine.current.data.solution)
   } else {
     drawGateTable(gt)
