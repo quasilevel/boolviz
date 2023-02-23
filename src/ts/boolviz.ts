@@ -85,9 +85,9 @@ const gt = circuit.gates
 const drawGateTable = ((g: Grid) => (table: GateTable, solution?: Map<number, boolean>) => {
   g.ctx.save()
   table.forEach((it, idx) => {
-    const color = (typeof solution !== "undefined" && !!solution.get(idx))
-      ? colors.white
-      : colors.black800
+    const color = typeof solution === "undefined"
+      ? colors.black800
+      : !!solution.get(idx) ? colors.white : colors.black300
     g.ctx.strokeStyle = color
     g.drawAt(it.coord, GateDrawer.get(it.type) as Drawer)
 
@@ -368,7 +368,7 @@ const canPreviewConnection = (fidx: number, tidx: number): boolean => {
   )
 }
 
-const frame = (_: number) => {
+const frame = (time: number) => {
   requestAnimationFrame(frame)
   gb.ctx.clearRect(0, 0, canvas.width, canvas.height)
   // gb.drawGrid()
@@ -407,10 +407,20 @@ const frame = (_: number) => {
     gb.drawAt(g.coord, (invalidGates.has(programMachine.current.data.idx)) ? drawErrorSelected : drawSelected)
   }
 
-  gb.ctx.save()
-  gb.ctx.strokeStyle = colors.black800
-  drawConnections(connTable)
-  gb.ctx.restore()
+  drawConnections(connTable, ([from, to], ctx) => {
+    if (programMachine.current.state === "running") {
+      const s = !!programMachine.current.data.solution.get(from)
+      const color = s ? colors.black800 : colors.black300
+      const dash = s ? [10, 10] : []
+      const offset = time / 100
+      ctx.setLineDash(dash)
+      ctx.lineDashOffset = -offset
+      ctx.strokeStyle = color
+      return
+    }
+
+    ctx.strokeStyle = colors.black800
+  })
 
   if (programMachine.current.state === "running") {
     drawSolution(programMachine.current.data.solution)

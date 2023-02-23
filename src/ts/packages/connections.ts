@@ -103,11 +103,15 @@ export const drawConnection = (
   }
 )
 
-export const drawConnections = (g: Grid) => (gt: GateTable) => (c: Connections) => {
+export const drawConnections = (g: Grid) => (gt: GateTable) => (c: Connections, configure: (f: [number, number], ctx: CanvasRenderingContext2D) => void) => {
   const { ctx } = g
   const [gfcoord, gtcoord] = getCoordMappers(g)(gt)
   ctx.save()
   ctx.lineWidth = 2
-  c.forEach(drawConnection(ctx)(gfcoord, gtcoord))
+  const drawer = drawConnection(ctx)(gfcoord, gtcoord)
+  c.forEach((from, to) => {
+    configure([from, to], ctx)
+    drawer(from, to)
+  })
   ctx.restore()
 }
