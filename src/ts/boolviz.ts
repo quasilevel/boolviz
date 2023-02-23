@@ -55,6 +55,8 @@ const gateMap = new SpatialMap<number>()
 let invalidGates: Map<number, [number, number]>
 let addGate: (g: Gate) => void;
 
+export const isInvalid = () => (typeof invalidGates !== "undefined" && invalidGates.size > 0)
+
 let currentId = 0
 let circuit = Circuit.Default()
 const shareID = new URLSearchParams(location.search).get("share")

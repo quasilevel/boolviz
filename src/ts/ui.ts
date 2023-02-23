@@ -1,4 +1,4 @@
-import { getGateInfo, getShareState, programMachine } from "./boolviz.js"
+import { getGateInfo, getShareState, isInvalid, programMachine } from "./boolviz.js"
 import Coord from "./packages/coord.js"
 import { GateType } from "./packages/gates.js"
 import { shareMachine } from "./packages/share.js"
@@ -124,10 +124,15 @@ programMachine.on("adding", _ => {
 programMachine.on("designing", _ => {
   deleteButton.dataset.state = "inactive"
   $.body.dataset.state = "designing"
+  $.body.dataset.state = isInvalid() ? "invalid" : "designing"
 })
 
 programMachine.on("running", _ => {
   $.body.dataset.state = "running"
+})
+
+programMachine.on("selected", _ => {
+  $.body.dataset.state = isInvalid() ? "invalid" : "designing"
 })
 
 const moveUnder = (c: Coord) => {

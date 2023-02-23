@@ -121,6 +121,11 @@ body[data-state="running"] #runner #designing-state {
 
 body[data-state="invalid"] #runner {
   box-shadow: inset var(--red-100) 0 0 16px -8px;
+  cursor: not-allowed;
+}
+
+body[data-state="invalid"] #runner button {
+  pointer-events: none;
 }
 
 body[data-state="running"] #runner {
