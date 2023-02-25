@@ -112,8 +112,9 @@ deleteButton?.addEventListener("click", async () => {
 })
 
 programMachine.on("selected", ({ idx }) => {
-  const { box } = getGateInfo(idx)! // guaranteed because idx is provided by the machine
-  moveUnder(new Coord(box.left + (box.width/2), box.bottom))
+  const { transformedBox: tbox } = getGateInfo(idx)! // guaranteed because idx is provided by the machine
+
+  moveUnder(new Coord(tbox.left + (tbox.width/2), tbox.bottom))
   deleteButton.dataset.state = "active"
 })
 

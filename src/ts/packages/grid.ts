@@ -46,20 +46,48 @@ export default class Grid {
     return [mat.a, mat.b, mat.c, mat.d, mat.e, mat.f]
   }
 
+  getScale(): number {
+    return this.ctx.getTransform().a
+  }
+
+  getCurrentBox(): Coord {
+    const { mouse: { coord }, ctx, boxSize } = this
+    const { e: dx, f: dy } = ctx.getTransform()
+    const absCoord = coord.add(new Coord(-dx, -dy))
+    const size = boxSize * this.getScale()
+    absCoord.mutScale(1 / size)
+    return new Coord(
+      Math.floor(absCoord.x), Math.floor(absCoord.y)
+    )
+  }
+
+  getTransformedCoord(c: Coord): Coord {
+    const { x, y } = this.ctx.getTransform().transformPoint(new DOMPoint(c.x, c.y))
+    return new Coord(x, y)
+  }
+
   _addClickListener() {
     this.ctx.canvas.addEventListener('click', () => {
       const ev = new CustomEvent<GridClickEvent>("grid_click", {
-        detail: new GridClickEvent(this.relBoxCoord(this.mouse.coord))
+        detail: new GridClickEvent(this.getCurrentBox())
       })
       window.dispatchEvent(ev)
     })
   }
 
   getBoundingBox(gridCoord: Coord): DOMRect {
-    // const coord = this.absBoxCoord(gridCoord)
     const coord = gridCoord.clone()
     coord.mutScale(this.boxSize)
     return new DOMRect(coord.x, coord.y, this.boxSize, this.boxSize)
+  }
+
+  getTransformedBoundingBox(gridCoord: Coord): DOMRect {
+    const coord = gridCoord.clone()
+    coord.mutScale(this.boxSize)
+    const size = this.boxSize * this.getScale()
+
+    const { x, y } = this.ctx.getTransform().transformPoint(new DOMPoint(coord.x, coord.y))
+    return new DOMRect(x, y, size, size)
   }
 
   drawAt(c: Coord, d: Drawer) {
@@ -74,11 +102,6 @@ export default class Grid {
     return new Coord(
       Math.floor(coord.x / boxSize), Math.floor(coord.y / boxSize)
     )
-  }
-
-  getCurrentBox(): Coord {
-    const { mouse: { coord } } = this
-    return this.relBoxCoord(coord)
   }
 
   absBoxCoord(c: Coord): Coord {

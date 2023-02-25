@@ -234,7 +234,8 @@ export const getGateInfo = (idx: number) => {
     return undefined
   }
   const box = gb.getBoundingBox(gate.coord)
-  return { gate, box }
+  const transformedBox = gb.getTransformedBoundingBox(gate.coord)
+  return { gate, box, transformedBox }
 }
 
 type StrokeAroundGateConfig = {
@@ -296,7 +297,8 @@ const drawErrorHover = (error: number) => drawAll(drawErrorLabel(error), strokeA
 export interface GateClickEvent {
   index: number
   gate: Gate
-  absCoord: Coord
+  absCoord: Coord,
+  canvasCoord: Coord
 }
 
 addEventListener("grid_click", (({ detail }: CustomEvent<GridClickEvent>) => {
@@ -305,11 +307,13 @@ addEventListener("grid_click", (({ detail }: CustomEvent<GridClickEvent>) => {
     return
   }
 
+  const absCoord = gb.absBoxCoord((gt.get(gateIndex) as Gate).coord)
   dispatchEvent(new CustomEvent<GateClickEvent>("gate_click", {
     detail: {
       index: gateIndex as number,
       gate: gt.get(gateIndex) as Gate,
-      absCoord: gb.absBoxCoord((gt.get(gateIndex) as Gate).coord)
+      absCoord,
+      canvasCoord: gb.getTransformedCoord(absCoord),
     }
   }))
 }) as EventListener)
