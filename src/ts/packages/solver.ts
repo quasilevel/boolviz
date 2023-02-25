@@ -15,7 +15,7 @@ export const circuitSolver =
   const outmap = output.table()
   const inputmap = output.invert().table()
   const solveIndex = (index: number): boolean => {
-    const inputs = inputmap.get(index) as Set<number>
+    const inputs = inputmap.get(index) ?? []
     const invals = [...inputs].map(it => solveFor(it))
     const val = GateSolver.get((gt.get(index) as Gate).type)?.(invals)
     if (typeof val === "undefined") {

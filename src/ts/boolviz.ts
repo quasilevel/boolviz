@@ -65,6 +65,8 @@ const shareID = new URLSearchParams(location.search).get("share")
 if (shareID !== null) {
   const args = await fetchSharedCircuit(shareID)
   circuit = new Circuit(args.circuit)
+
+  args.circuit.gates.map(([id, g]) => gateMap.set(g.coord, id))
 }
 
 addGate = ((m: SpatialMap<number>, t: GateTable) => (g: Gate) => {
@@ -72,8 +74,6 @@ addGate = ((m: SpatialMap<number>, t: GateTable) => (g: Gate) => {
   m.set(g.coord, currentId)
   currentId++
 })(gateMap, circuit.gates)
-
-;[...circuit.gates].map(([_, g]) => addGate(g))
 
 export const getShareState = () => {
   return {
@@ -93,7 +93,7 @@ const drawGateTable = ((g: Grid) => (table: GateTable, solution?: Map<number, bo
     g.ctx.strokeStyle = color
     g.drawAt(it.coord, GateDrawer.get(it.type) as Drawer)
 
-    if (!invalidGates.has(idx)) {
+    if (typeof invalidGates === "undefined" || !invalidGates.has(idx)) {
       return
     }
     if (programMachine.current.state === "selected" && programMachine.current.data.idx === idx) {
@@ -374,7 +374,7 @@ const frame = (time: number) => {
       break hoverable
     }
     const g = gt.get(currentIdx) as Gate
-    if (invalidGates.has(currentIdx)) {
+    if (typeof invalidGates !== "undefined" && invalidGates.has(currentIdx)) {
       const [actual, expected] = invalidGates.get(currentIdx)!
       gb.drawAt(g.coord, drawErrorHover(expected - actual))
     } else {
@@ -394,7 +394,7 @@ const frame = (time: number) => {
 
   if (programMachine.current.state === "selected") {
     const g = gt.get(programMachine.current.data.idx) as Gate
-    gb.drawAt(g.coord, (invalidGates.has(programMachine.current.data.idx)) ? drawErrorSelected : drawSelected)
+    gb.drawAt(g.coord, (typeof invalidGates !== "undefined" && invalidGates.has(programMachine.current.data.idx)) ? drawErrorSelected : drawSelected)
   }
 
   drawConnections(connTable, ([from, to], ctx) => {
