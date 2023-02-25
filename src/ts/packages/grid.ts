@@ -39,6 +39,7 @@ export default class Grid {
     this.boxSize = boxSize
 
     this._addClickListener()
+    this._addScrollListner()
   }
 
   getTransform(): Transform {
@@ -72,6 +73,15 @@ export default class Grid {
         detail: new GridClickEvent(this.getCurrentBox())
       })
       window.dispatchEvent(ev)
+    })
+  }
+
+  _addScrollListner() {
+    const grid = this
+    this.ctx.canvas.addEventListener("wheel", ev => {
+      ev.preventDefault()
+      const inv = -1
+      grid.ctx.translate(ev.deltaX * inv, ev.deltaY * inv)
     })
   }
 
