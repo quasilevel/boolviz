@@ -116,6 +116,7 @@ export default class Grid {
       
       if (ev.ctrlKey) {
         this.scale(inv * ev.deltaY)
+        dispatchEvent(new CustomEvent("zooming"))
         return
       }
 
@@ -123,6 +124,8 @@ export default class Grid {
       const dy = ev.deltaY * inv / 10 * (1 / this.#scale)
       grid.ctx.translate(dx, dy)
       grid.#translate.mutAdd(dx, dy)
+
+      dispatchEvent(new CustomEvent("panning"))
     })
   }
 
