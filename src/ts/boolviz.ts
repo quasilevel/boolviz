@@ -319,14 +319,18 @@ addEventListener("grid_click", (({ detail }: CustomEvent<GridClickEvent>) => {
 }) as EventListener)
 
 addEventListener("gate_click", (({ detail }: CustomEvent<GateClickEvent>) => {
-  if (programMachine.current.state !== "selected") {
-    programMachine.trigger("select_gate", { idx: detail.index })
-  }
-
-  programMachine.trigger("toggle_connection", { to: detail.index })
-
   if (detail.gate.type === GateType.IN_TERM) {
     programMachine.trigger("switch_input", { idx: detail.index })
+  }
+
+  if (programMachine.current.state !== "selected") {
+    programMachine.trigger("select_gate", { idx: detail.index })
+    return
+  }
+
+  if (programMachine.current.state === "selected") {
+    programMachine.trigger("toggle_connection", { to: detail.index })
+    return
   }
 }) as EventListener)
 
