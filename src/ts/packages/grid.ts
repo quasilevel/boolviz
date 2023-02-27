@@ -32,9 +32,13 @@ export default class Grid {
   ctx: CanvasRenderingContext2D
   boxSize: number
   mouse: Mouse
+  #scale: number = 1
+  #translate: Coord = new Coord(0, 0)
 
   constructor({ ctx, mouse, boxSize = 75 }: GridConfig) {
     this.ctx = ctx
+    ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2)
+    this.#translate.mutAdd(ctx.canvas.width / 2, ctx.canvas.height / 2)
     this.mouse = mouse
     this.boxSize = boxSize
 
@@ -48,7 +52,12 @@ export default class Grid {
   }
 
   getScale(): number {
-    return this.ctx.getTransform().a
+    return this.#scale
+  }
+
+  getTranslate(): Coord {
+    const { e, f } = this.ctx.getTransform()
+    return new Coord(e, f)
   }
 
   getCurrentBox(): Coord {
@@ -76,12 +85,44 @@ export default class Grid {
     })
   }
 
+  private scale(ds: number) {
+    const MAX = 2.5
+    const MIN = 0.25
+    const DAMP = 1000
+
+    const { mouse: { coord: { x, y } } } = this
+
+   // update the scale
+    const previousScale = this.#scale
+    const newScale = Math.max(MIN, Math.min(MAX, this.#scale + (ds / DAMP)))
+    const k = newScale / previousScale
+
+    this.#scale = newScale
+
+
+    const transform = this.ctx.getTransform()
+    const inverselyTranformedMouseCoord = transform.inverse().transformPoint(new DOMPoint(x, y))
+
+    this.ctx.setTransform(
+      transform.scale3d(k, inverselyTranformedMouseCoord.x, inverselyTranformedMouseCoord.y)
+    )
+  }
+
   _addScrollListner() {
     const grid = this
     this.ctx.canvas.addEventListener("wheel", ev => {
       ev.preventDefault()
       const inv = -1
-      grid.ctx.translate(ev.deltaX * inv, ev.deltaY * inv)
+      
+      if (ev.ctrlKey) {
+        this.scale(inv * ev.deltaY)
+        return
+      }
+
+      const dx = ev.deltaX * inv / 10 * (1 / this.#scale)
+      const dy = ev.deltaY * inv / 10 * (1 / this.#scale)
+      grid.ctx.translate(dx, dy)
+      grid.#translate.mutAdd(dx, dy)
     })
   }
 

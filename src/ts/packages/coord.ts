@@ -18,13 +18,15 @@ export default class Coord {
     )
   }
 
-  mutScale(val: number) {
+  mutScale(val: number): Coord {
     this.x *= val
     this.y *= val
+    return this
   }
 
-  mutAdd(x: number, y: number) {
+  mutAdd(x: number, y: number): Coord {
     this.x += x, this.y += y
+    return this
   }
 
   clone(): Coord {

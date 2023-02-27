@@ -364,8 +364,9 @@ const canPreviewConnection = (fidx: number, tidx: number): boolean => {
 
 const frame = (time: number) => {
   requestAnimationFrame(frame)
-  gb.ctx.clearRect(0, 0, canvas.width, canvas.height)
-  // gb.drawGrid()
+  const scale = gb.getScale()
+  const origin = gb.ctx.getTransform().inverse().transformPoint(new DOMPoint(0, 0))
+  gb.ctx.clearRect(origin.x, origin.y, canvas.width / scale, canvas.height / scale)
   gb.ctx.lineWidth = 2
   gb.ctx.strokeStyle = colors.black800
 
