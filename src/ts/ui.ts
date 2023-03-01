@@ -121,9 +121,13 @@ const showDeleteButton = ( idx: number ): void => {
   const { transformedBox: tbox } = getGateInfo(idx)! // guaranteed because idx is provided by the machine
   const { left, top } = deleteWidgetCoord(tbox)
 
-
-  deleteButton.style.left = left
-  deleteButton.style.top = top
+  deleteButton.animate(
+    { left, top },
+    {
+      duration: 0,
+      fill: "forwards"
+    }
+  )
 
   deleteButton.dataset.state = "active"
 }
