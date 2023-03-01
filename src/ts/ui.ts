@@ -172,7 +172,7 @@ const shareDOM = {
   }
 }
 
-const openShareModal = (_: MouseEvent): boolean => shareMachine.trigger("Open", undefined)
+const openShareModal = (_: MouseEvent): boolean => !isInvalid() && shareMachine.trigger("Open", undefined)
 const closeShareModal = (_: MouseEvent): boolean => shareMachine.trigger("Close", undefined)
 
 shareDOM.shareButton.addEventListener("click", openShareModal)
