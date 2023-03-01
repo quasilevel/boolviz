@@ -309,3 +309,17 @@ shareMachine.on("Shared", ({ url, embed }) => {
   shareDOM.outputs.url.output.innerText = url.toString()
   shareDOM.outputs.iframe.output.innerText = buildShareIframe(embed)
 })
+
+// welcome banner
+const getStartedButton = definitely($.querySelector<HTMLButtonElement>("#welcome #cta button"), "Get started button is missing")
+const welcomeOverlay = definitely($.querySelector<HTMLDivElement>("#welcome-overlay"), "Welcome overlay is missing")
+const BANNER_KEY = "welcomed"
+
+if (localStorage.getItem(BANNER_KEY) === null) {
+  welcomeOverlay.classList.remove("hidden")
+}
+
+getStartedButton.addEventListener("click", _ => {
+  localStorage.setItem(BANNER_KEY, "true")
+  welcomeOverlay.classList.add("hidden")
+})
