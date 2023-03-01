@@ -107,23 +107,90 @@ programMachine.exit("adding", _ => {
 })
 
 const deleteButton = document.querySelector("#delete-widget") as HTMLButtonElement
+
+const deleteWidgetCoord = (box: DOMRect) => {
+  const x = box.left + (box.width / 2)
+  const y = box.bottom
+  return {
+    left: `${x + 15}px`,
+    top: `${y + 44}px`,
+  }
+}
+
+const showDeleteButton = ( idx: number ): void => {
+  const { transformedBox: tbox } = getGateInfo(idx)! // guaranteed because idx is provided by the machine
+  const { left, top } = deleteWidgetCoord(tbox)
+
+
+  deleteButton.style.left = left
+  deleteButton.style.top = top
+
+  deleteButton.dataset.state = "active"
+}
+
+const showDeleteButtonOnIfSelected = () => {
+  if (programMachine.current.state !== "selected") return
+
+  const { idx } = programMachine.current.data
+  const { transformedBox: tbox } = getGateInfo(idx)! // guaranteed because idx is provided by the machine
+  const { left, top } = deleteWidgetCoord(tbox)
+
+  deleteButton.animate(
+    { left, top },
+    {
+      duration: 350,
+      fill: "forwards"
+    }
+  )
+}
+
+type DeleteButtonStates = {
+  hidden: void,
+  visible: {
+    aborter: AbortController
+  }
+}
+
+type DeleteButtonEvents = {
+  hide: void,
+  show: number, // idx
+}
+
+const deleteButtonMachine = new Machine<DeleteButtonStates, DeleteButtonEvents>(
+  { state: "hidden", data: undefined },
+  {
+    hidden: {
+      show: idx => {
+        const aborter = new AbortController()
+        const { signal } = aborter
+        showDeleteButton(idx)
+        addEventListener("panning", showDeleteButtonOnIfSelected, { signal })
+        addEventListener("zooming", showDeleteButtonOnIfSelected, { signal })
+        return { state: "visible", data: { aborter } }
+      }
+    },
+    visible: {
+      hide: (_, { aborter }) => {
+        aborter.abort()
+        deleteButton.dataset.state = "inactive"
+        return { state: "hidden", data: undefined }
+      }
+    }
+  }
+)
+
 deleteButton?.addEventListener("click", async () => {
   programMachine.trigger("delete_gate", undefined)
 })
 
-programMachine.on("selected", ({ idx }) => {
-  const { transformedBox: tbox } = getGateInfo(idx)! // guaranteed because idx is provided by the machine
-
-  moveUnder(new Coord(tbox.left + (tbox.width/2), tbox.bottom))
-  deleteButton.dataset.state = "active"
-})
+programMachine.on("selected", ({ idx }) => deleteButtonMachine.trigger("show", idx))
 
 programMachine.on("adding", _ => {
   deleteButton.dataset.state = "inactive"
 })
 
 programMachine.on("designing", _ => {
-  deleteButton.dataset.state = "inactive"
+  deleteButtonMachine.trigger("hide", undefined)
   $.body.dataset.state = "designing"
   $.body.dataset.state = isInvalid() ? "invalid" : "designing"
 })
@@ -135,11 +202,6 @@ programMachine.on("running", _ => {
 programMachine.on("selected", _ => {
   $.body.dataset.state = isInvalid() ? "invalid" : "designing"
 })
-
-const moveUnder = (c: Coord) => {
-  deleteButton.style.left = `${c.x + 15}px`
-  deleteButton.style.top = `${c.y + 44}px`
-}
 
 const runButton = definitely($.querySelector<HTMLButtonElement>("#runner button"), "runer button is missing")
 
