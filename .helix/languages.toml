@@ -1,0 +1,7 @@
+[[language]]
+name = "typescript"
+scope = "source.ts"
+file-types = ["ts"]
+language-server = { command = "typescript-language-server", args = ["--stdio"] }
+roots = ["tsconfig.json"]
+config = { preference = { "importModuleSpecifierEnding" = "js" }}

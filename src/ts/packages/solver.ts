@@ -3,9 +3,9 @@ import { Connections } from "./connections.js"
 
 export const listInvalidGates = (gt: GateTable, conns: Connections): Map<number, [number, number]> => {
   const invt = conns.invert().table()
-  const bad = [...invt.entries()]
-  .map(([to, froms]): [number, [number, number]] => [to, [froms.size, GateArgCount.get((gt.get(to) as Gate).type) as number]])
-  .filter(([_, [actual, expexted]]) => actual !== expexted)
+  const bad = [...gt]
+  .map(([idx, gate]): [number, [number, number]] => [idx, [invt.get(idx)?.size ?? 0, GateArgCount.get(gate.type)!]])
+  .filter(([_, [actual, expected]]) => actual !== expected)
   return new Map(bad)
 }
 
@@ -15,7 +15,7 @@ export const circuitSolver =
   const outmap = output.table()
   const inputmap = output.invert().table()
   const solveIndex = (index: number): boolean => {
-    const inputs = inputmap.get(index) as Set<number>
+    const inputs = inputmap.get(index) ?? []
     const invals = [...inputs].map(it => solveFor(it))
     const val = GateSolver.get((gt.get(index) as Gate).type)?.(invals)
     if (typeof val === "undefined") {

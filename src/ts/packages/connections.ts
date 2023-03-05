@@ -4,8 +4,26 @@ import Grid from "./grid.js"
 
 const CONNECTION_JOIN_GAP = 15 // px
 
+type ConnectionArgs = [number, number[]][]
+
 export class Connections {
-  private c: Map<number, Set<number>> = new Map()
+  private c: Map<number, Set<number>>
+
+  constructor(args: ConnectionArgs) {
+    this.c = new Map(args.map(
+      ([idx, idxs]) => [idx, new Set(idxs)]
+    ))
+  }
+
+  static Default(): Connections {
+    return new Connections([])
+  }
+
+  asPlain(): ConnectionArgs {
+    return [...this.c].map(
+      ([idx, idxSet]) => [idx, [...idxSet]]
+    )
+  }
 
   add(from: number, to: number) {
     if (!this.c.has(from)) {
@@ -34,7 +52,7 @@ export class Connections {
   table(): Map<number, Set<number>> { return this.c }
 
   invert(): Connections {
-    const m = new Connections()
+    const m = Connections.Default()
     this.c.forEach((tos, from) => {
       tos.forEach(to => {
         m.add(to, from)
@@ -85,12 +103,15 @@ export const drawConnection = (
   }
 )
 
-export const drawConnections = (g: Grid) => (gt: GateTable) => (c: Connections) => {
+export const drawConnections = (g: Grid) => (gt: GateTable) => (c: Connections, configure: (f: [number, number], ctx: CanvasRenderingContext2D) => void) => {
   const { ctx } = g
   const [gfcoord, gtcoord] = getCoordMappers(g)(gt)
   ctx.save()
   ctx.lineWidth = 2
-  ctx.strokeStyle = "pink"
-  c.forEach(drawConnection(ctx)(gfcoord, gtcoord))
+  const drawer = drawConnection(ctx)(gfcoord, gtcoord)
+  c.forEach((from, to) => {
+    configure([from, to], ctx)
+    drawer(from, to)
+  })
   ctx.restore()
 }
