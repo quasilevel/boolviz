@@ -212,6 +212,7 @@ body.hide-el #gates-pallete {
   place-items: center;
 
   background: transparent;
+  --hover-color: var(--black-200);
 }
 
 #gates-pallete:hover {
@@ -225,7 +226,7 @@ body.hide-el #gates-pallete {
 }
 
 #gates-pallete .gate-con:hover {
-  background: var(--black-100);
+  background: var(--hover-color);
 }
 
 #gates-pallete .gate-con:hover .icon {
