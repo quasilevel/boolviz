@@ -44,9 +44,11 @@ button:disabled {
 
 body {
   margin: 0px;
+  box-sizing: border-box;
   padding: var(--main-padding);
+  padding-bottom: calc(2 * var(--main-padding));
   background: var(--theme-bg);
-  height: calc(100vh - var(--main-padding) * 2);
+  height: 100vh;
   display: grid;
   grid-template-rows: var(--header-size) 1fr 64px;
   font-family: var(--font);
