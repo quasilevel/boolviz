@@ -174,7 +174,7 @@ body:not([data-state=invalid]) #runner button:hover::after {
   background: transparent;
 }
 
-canvas {
+div#boolviz {
   width: 100%;
   height: 100%;
 }
@@ -256,10 +256,6 @@ body.hide-el #gates-pallete {
 
 #gates-pallete .gate-con[data-state="selected"] .icon {
   stroke: var(--white-primary);
-}
-
-#gates-pallete:has(.gate-con) {
-  border-color: blue;
 }
 
 #command-pallete {

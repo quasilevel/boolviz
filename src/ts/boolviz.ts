@@ -9,10 +9,10 @@ import { Circuit } from './packages/circuit.js'
 import { Machine, pass } from './packages/state.js'
 const $ = document
 
-const canvas = $.querySelector('canvas#boolviz') as HTMLCanvasElement
+const canvas = $.querySelector('div#boolviz canvas') as HTMLCanvasElement
 
 if (canvas === null) {
-  throw new Error("Cannot find <canvas id='boolviz'></canvas>")
+  throw new Error("Cannot find div#boolviz>canvas")
 }
 
 const css = getComputedStyle($.body)
@@ -29,7 +29,10 @@ const colors = {
 
 
 { // set canvas dimensions based on css
-  const canvasDim = canvas.getBoundingClientRect()
+  const canvasDim = $.querySelector("div#boolviz")?.getBoundingClientRect()
+  if (typeof canvasDim === "undefined") {
+    throw new Error("Cannot find div#canvas")
+  }
 
   canvas.width = canvasDim.width
   canvas.height = canvasDim.height
