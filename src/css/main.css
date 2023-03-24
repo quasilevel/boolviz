@@ -75,6 +75,8 @@ header {
 }
 
 #runner {
+  --separator-color: var(--black-300);
+  --hover-color: var(--black-200);
   height: 100%;
   border-radius: 6px;
   display: flex;
@@ -85,8 +87,8 @@ header {
   transition: all 0.08s ease-in;
   background: var(--black-100);
   color: var(--black-800);
-  --separator-color: var(--black-300);
-  --hover-color: var(--black-200);
+  border: 1px solid;
+  border-color: var(--black-300);
 }
 
 #runner #running-icon {
@@ -134,6 +136,7 @@ body[data-state="invalid"] #runner button {
 body[data-state="running"] #runner {
   background: var(--black-800);
   color: var(--black-200);
+  border-color: var(--black-900);
   --separator-color: var(--black-700);
   --hover-color: var(--black-700);
 }
@@ -322,7 +325,7 @@ body.hide-el #gates-pallete {
   gap: 0.5em;
   padding: 0px 1rem;
   background: var(--black-100);
-  border: none;
+  border: 1px solid var(--black-300);
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.08s ease-in;
